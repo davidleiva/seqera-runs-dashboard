@@ -21,15 +21,24 @@ edge-case stories (cancelled, failed-no-message, long-name).
   "Failed · exit 0" contradiction. It belongs in the **drawer** metadata, not the row.
 
 ### 2. Replace the "Needs attention" text pill with a consistent minimal marker
-- Remove the amber text pill. Add a small **attention marker** (amber `#B45309` warning
-  glyph / dot) next to the status, using the ONE attention token used elsewhere (bar hatch).
-- **Only on non-failed attention runs** (SUCCEEDED-with-issues, retries, low efficiency).
-  On FAILED rows the red status already signals attention — no marker.
-- **Tooltip explains why**: e.g. "Succeeded, but 1 task failed · 1 retry". This needs the
-  row to know the reason(s): add `attentionReasons?: string[]` (or a prebuilt
-  `attentionLabel`) to the VM, populated by the adapter. Keep the component dumb — it just
-  renders the reason it's given.
-- Marker is decorative + has an accessible label (title/aria), never colour-only.
+- Remove the amber text pill. Add a small **attention marker** (a subtle amber `#B45309`
+  warning glyph, NOT another pill) using the ONE attention token used across the app.
+- **Placement: next to the status pill, inside the Status cell** — e.g. `[✕ Failed] ⚠`,
+  `[✓ Succeeded] ⚠`. Do NOT put it in the Run cell (it drifts and can be pushed by long
+  run names). Grouping status + attention forms a "health cluster" read at a glance, in a
+  column of stable width.
+- **Appears on ALL attention runs, including FAILED** (not only succeeded). Reason:
+  reconciliation — the headline says "8 need attention", so filtering to attention must
+  show 8 marked rows (3 failed + 5 succeeded-with-issues). Marking only the succeeded ones
+  would desync the count and give the marker a fuzzier meaning. Keep the meaning simple:
+  **marker = needs attention, full stop.** The subtlety of the glyph avoids feeling loud
+  on already-red rows.
+- **Tooltip explains the specific reason** per run: e.g. "Failed in process ABACAS" /
+  "Succeeded, but 1 task failed · 1 retry". This needs the row to know the reason(s): add
+  `attentionReasons?: string[]` (or a prebuilt `attentionLabel`) to the VM, populated by
+  the adapter. Keep the component dumb — it just renders the reason it's given.
+- Marker is decorative + has an accessible label (title/aria), never colour-only. It is a
+  display indicator, not a click target (row click still opens the drawer).
 
 ### 3. Alignment
 - **Vertical-center every cell** to the row (the Run cell is two lines: title + subtitle).
@@ -69,8 +78,10 @@ edge-case stories (cancelled, failed-no-message, long-name).
 
 ## Stories to update / add
 
-- Update `run-row` stories so the pill has no exit code and attention shows as the marker
-  (with tooltip) only on the non-failed attention fixtures.
+- Update `run-row` stories so the pill has no exit code and the attention marker (with
+  tooltip) sits next to the status pill on ALL attention fixtures — both a failed one
+  (e.g. the ABACAS failure) and a succeeded-with-issues one — plus a clean run with no
+  marker, to show the three cases.
 - `runs-table`: add/verify sort stories for the new sortable columns (e.g. **SortByDuration**,
   **SortByRetries**), and a story showing right-aligned numeric columns.
 - Keep all existing edge-case stories. `addon-a11y` green throughout (marker label, bar

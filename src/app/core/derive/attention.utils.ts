@@ -1,5 +1,5 @@
 import type { RawRun } from '../models/raw-run.model';
-import type { RunStatus } from '../models/run.model';
+import type { RunError, RunStatus } from '../models/run.model';
 
 /**
  * Non-FAILED attention signals only, in display order. FAILED is handled separately by
@@ -44,9 +44,16 @@ const STATUS_VERB: Record<RunStatus, string> = {
   CANCELLED: 'Cancelled',
 };
 
-/** Tooltip text for the row's attention marker. Null on FAILED — no marker is shown there. */
-export function attentionLabel(raw: RawRun, status: RunStatus): string | null {
-  if (status === 'FAILED') return null;
+/**
+ * Tooltip text for the row's attention marker. Non-null exactly when `needsAttention` is
+ * true — the marker means "needs attention, full stop", on FAILED rows too (reconciles
+ * with the summary's "N need attention" headline). No invented cause when the error is
+ * unparsed (e.g. scruffy_colden) — just "Failed".
+ */
+export function attentionLabel(raw: RawRun, status: RunStatus, error: RunError | null): string | null {
+  if (status === 'FAILED') {
+    return error?.process ? `Failed in process ${error.process}` : 'Failed';
+  }
   const reasons = attentionReasons(raw);
   if (reasons.length === 0) return null;
   return `${STATUS_VERB[status]}, but ${reasons.join(' · ')}`;

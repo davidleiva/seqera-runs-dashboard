@@ -34,20 +34,27 @@ export default meta;
 
 type Story = StoryObj<RunRowComponent>;
 
+// ─── The three attention-marker cases ─────────────────────────────────────────
+// The marker sits next to the status pill and shows on every attention run,
+// including FAILED — reconciles with the summary's "N need attention" count.
+
 export const Failed: Story = {
   args: { run: failedViralrecon, selected: false },
-};
-
-export const FailedSelected: Story = {
-  args: { run: failedViralrecon, selected: true },
-};
-
-export const Succeeded: Story = {
-  args: { run: succeededRnaseq, selected: false },
+  name: 'Failed (⚠ marker — "Failed in process ABACAS")',
 };
 
 export const SucceededNeedsAttention: Story = {
   args: { run: succeededWithFailedTask, selected: false },
+  name: 'Succeeded with issues (⚠ marker — "Succeeded, but 1 task failed · 1 retry")',
+};
+
+export const Succeeded: Story = {
+  args: { run: succeededRnaseq, selected: false },
+  name: 'Succeeded, clean (no marker)',
+};
+
+export const FailedSelected: Story = {
+  args: { run: failedViralrecon, selected: true },
 };
 
 export const Running: Story = {

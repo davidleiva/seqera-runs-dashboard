@@ -82,6 +82,20 @@
     }
   }
 
+  &__status-cluster {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__attention {
+    flex-shrink: 0;
+    font-size: 15px;
+    line-height: 1;
+    color: var(--c-warn-text);
+    cursor: default;
+  }
+
   &__chevron {
     font-size: 18px;
     color: var(--c-text-muted);

@@ -40,7 +40,7 @@ export interface RunVM {
   pipeline: string;
   status: RunStatus;
   needsAttention: boolean;
-  /** Human-readable reason for the attention marker, e.g. "Succeeded, but 1 task failed · 1 retry". Null on FAILED rows — the red status already signals attention there. */
+  /** Human-readable reason for the attention marker, e.g. "Succeeded, but 1 task failed · 1 retry" or "Failed in process ABACAS". Non-null exactly when `needsAttention` is true. */
   attentionLabel: string | null;
 
   // Table columns

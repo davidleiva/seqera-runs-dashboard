@@ -144,13 +144,23 @@ describe('attentionReasons', () => {
 });
 
 describe('attentionLabel', () => {
-  it('is null on FAILED regardless of reasons — no marker there', () => {
-    const raw = makeRaw({ status: 'FAILED', load: { ...makeRaw().load, retries: 1 } });
-    expect(attentionLabel(raw, 'FAILED')).toBeNull();
+  it('names the failing process on FAILED (viralrecon/ABACAS case)', () => {
+    const raw = makeRaw({ status: 'FAILED' });
+    expect(attentionLabel(raw, 'FAILED', { process: 'ABACAS' })).toBe('Failed in process ABACAS');
+  });
+
+  it('falls back to a generic "Failed" when the error is unparsed (scruffy_colden case)', () => {
+    const raw = makeRaw({ status: 'FAILED', errorMessage: null });
+    expect(attentionLabel(raw, 'FAILED', null)).toBe('Failed');
+  });
+
+  it('is never null on FAILED — marker always shows there', () => {
+    const raw = makeRaw({ status: 'FAILED' });
+    expect(attentionLabel(raw, 'FAILED', null)).not.toBeNull();
   });
 
   it('is null for a clean SUCCEEDED run', () => {
-    expect(attentionLabel(makeRaw(), 'SUCCEEDED')).toBeNull();
+    expect(attentionLabel(makeRaw(), 'SUCCEEDED', null)).toBeNull();
   });
 
   it('composes "Succeeded, but ..." from the reasons (serene_albattani case)', () => {
@@ -159,6 +169,14 @@ describe('attentionLabel', () => {
       stats: { ...makeRaw().stats, failedCount: 1 },
       load: { ...makeRaw().load, retries: 1 },
     });
-    expect(attentionLabel(raw, 'SUCCEEDED')).toBe('Succeeded, but 1 task failed · 1 retry');
+    expect(attentionLabel(raw, 'SUCCEEDED', null)).toBe('Succeeded, but 1 task failed · 1 retry');
+  });
+
+  it('is non-null exactly when needsAttention is true', () => {
+    const clean = makeRaw();
+    expect(attentionLabel(clean, 'SUCCEEDED', null) !== null).toBe(needsAttention(clean));
+
+    const flagged = makeRaw({ load: { ...makeRaw().load, retries: 2 } });
+    expect(attentionLabel(flagged, 'SUCCEEDED', null) !== null).toBe(needsAttention(flagged));
   });
 });

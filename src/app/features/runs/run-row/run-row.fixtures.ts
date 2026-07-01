@@ -20,7 +20,7 @@ export const failedViralrecon: RunVM = {
   pipeline: 'nf-core/viralrecon',
   status: 'FAILED',
   needsAttention: true,
-  attentionLabel: null, // FAILED — red status already signals attention, no marker
+  attentionLabel: 'Failed in process ABACAS',
   user: 'adamtalbot',
   submittedAt: new Date('2026-06-26T12:58:50Z'),
   submittedLabel: 'Jun 26 · 12:58',
@@ -117,7 +117,7 @@ export const failedNoMessage: RunVM = {
   pipeline: 'nextflow-io/rnaseq-nf',
   status: 'FAILED',
   needsAttention: true,
-  attentionLabel: null, // FAILED — no marker even though errorMessage is null
+  attentionLabel: 'Failed', // FAILED with errorMessage null — generic, no invented cause
   user: 'adamtalbot',
   submittedAt: new Date('2026-06-12T15:41:26Z'),
   submittedLabel: 'Jun 12 · 15:41',

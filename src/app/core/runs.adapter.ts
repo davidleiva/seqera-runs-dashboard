@@ -42,6 +42,7 @@ export function toRunVM(raw: RawRun): RunVM {
   const cost = raw.load.cost ?? null;
   const executors = raw.load.executors;
   const executor = executors && executors.length > 0 ? executors[0] : null;
+  const error = parseError(raw);
 
   return {
     id: raw.id,
@@ -49,7 +50,7 @@ export function toRunVM(raw: RawRun): RunVM {
     pipeline: raw.projectName,
     status,
     needsAttention: needsAttention(raw),
-    attentionLabel: attentionLabel(raw, status),
+    attentionLabel: attentionLabel(raw, status, error),
     user: raw.userName,
     submittedAt: new Date(raw.submit),
     submittedLabel: formatSubmitted(raw.submit),
@@ -61,7 +62,7 @@ export function toRunVM(raw: RawRun): RunVM {
     executor,
     exitStatus: raw.exitStatus,
     tasks: taskBreakdown(raw),
-    error: parseError(raw),
+    error,
     sessionId: raw.sessionId,
     commitId: raw.commitId,
     workDir: raw.workDir,

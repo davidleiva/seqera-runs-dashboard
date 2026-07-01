@@ -23,13 +23,22 @@ import { UserCellComponent } from '../../../shared/user-cell/user-cell.component
   ],
   template: `
     <td class="run-row__cell run-row__cell--status">
-      <app-status-pill [status]="run().status" />
+      <span class="run-row__status-cluster">
+        <app-status-pill [status]="run().status" />
+        @if (run().attentionLabel) {
+          <span
+            class="material-icons run-row__attention"
+            role="img"
+            [attr.aria-label]="run().attentionLabel"
+            [title]="run().attentionLabel"
+          >warning</span>
+        }
+      </span>
     </td>
     <td class="run-row__cell run-row__cell--identity">
       <app-run-identity
         [name]="run().name"
-        [pipeline]="run().pipeline"
-        [attentionLabel]="run().attentionLabel" />
+        [pipeline]="run().pipeline" />
     </td>
     <td class="run-row__cell run-row__cell--user">
       <app-user-cell [user]="run().user" />
