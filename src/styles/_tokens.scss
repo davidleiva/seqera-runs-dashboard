@@ -31,8 +31,16 @@
   --c-cancel-text: #475569;
   --c-cancel-bg: #EEF1F5;
   --c-cancel-border: #DBE1E9;
+  --c-cancel-2: #94A3B8;
 
   --c-accent-violet: #8B5CF6;
+
+  // Deterministic per-user avatar palette (identity only — kept distinct from status semantics).
+  --c-avatar-1: #4256E7;
+  --c-avatar-2: #0E7490;
+  --c-avatar-3: #6D28D9;
+  --c-avatar-4: #BE185D;
+  --c-avatar-5: #334155;
 
   --radius: 4px;
   --radius-pill: 100px;

@@ -8,6 +8,7 @@ function makeVM(overrides: Partial<RunVM> = {}): RunVM {
     pipeline: 'nf-core/test',
     status: 'SUCCEEDED',
     needsAttention: false,
+    attentionLabel: null,
     user: 'test',
     submittedAt: new Date('2026-06-01T10:00:00Z'),
     submittedLabel: 'Jun 1 · 10:00',
@@ -85,5 +86,36 @@ describe('sortRuns — cost sort', () => {
   it('sorts descending puts most expensive first, nulls last', () => {
     const result = sortRuns([free, cheap, expensive], { key: 'cost', dir: 'desc' });
     expect(result.map(r => r.id)).toEqual(['exp', 'cheap', 'free']);
+  });
+});
+
+describe('sortRuns — retries sort', () => {
+  const stable = makeVM({ id: 'stable', retries: 0 });
+  const flaky = makeVM({ id: 'flaky', retries: 3 });
+
+  it('sorts descending puts most retried first', () => {
+    const result = sortRuns([stable, flaky], { key: 'retries', dir: 'desc' });
+    expect(result.map(r => r.id)).toEqual(['flaky', 'stable']);
+  });
+});
+
+describe('sortRuns — name sort', () => {
+  const zebra = makeVM({ id: 'z', name: 'zebra_run' });
+  const alpha = makeVM({ id: 'a', name: 'alpha_run' });
+
+  it('sorts ascending alphabetically', () => {
+    const result = sortRuns([zebra, alpha], { key: 'name', dir: 'asc' });
+    expect(result.map(r => r.id)).toEqual(['a', 'z']);
+  });
+});
+
+describe('sortRuns — user sort', () => {
+  const bob = makeVM({ id: 'bob', user: 'bob' });
+  const alice = makeVM({ id: 'alice', user: 'alice' });
+  const noUser = makeVM({ id: 'none', user: null });
+
+  it('sorts ascending alphabetically, nulls last', () => {
+    const result = sortRuns([noUser, bob, alice], { key: 'user', dir: 'asc' });
+    expect(result.map(r => r.id)).toEqual(['alice', 'bob', 'none']);
   });
 });

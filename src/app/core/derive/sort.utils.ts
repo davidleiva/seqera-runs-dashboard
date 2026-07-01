@@ -33,6 +33,15 @@ export function sortRuns(runs: RunVM[], sort: SortState): RunVM[] {
         if (a.cost === null) return 1;
         if (b.cost === null) return -1;
         return dir * (a.cost - b.cost);
+      case 'retries':
+        return dir * (a.retries - b.retries);
+      case 'name':
+        return dir * a.name.localeCompare(b.name);
+      case 'user':
+        if (a.user === null && b.user === null) return 0;
+        if (a.user === null) return 1;
+        if (b.user === null) return -1;
+        return dir * a.user.localeCompare(b.user);
       default:
         return 0;
     }

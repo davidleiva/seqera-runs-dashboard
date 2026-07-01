@@ -1,6 +1,6 @@
 export type RunStatus = 'SUCCEEDED' | 'FAILED' | 'CANCELLED' | 'RUNNING' | 'SUBMITTED';
 
-export type SortKey = 'risk' | 'submitted' | 'duration' | 'cost';
+export type SortKey = 'risk' | 'name' | 'user' | 'submitted' | 'duration' | 'cost' | 'retries';
 export type SortDir = 'asc' | 'desc';
 export interface SortState {
   key: SortKey;
@@ -40,6 +40,8 @@ export interface RunVM {
   pipeline: string;
   status: RunStatus;
   needsAttention: boolean;
+  /** Human-readable reason for the attention marker, e.g. "Succeeded, but 1 task failed · 1 retry". Null on FAILED rows — the red status already signals attention there. */
+  attentionLabel: string | null;
 
   // Table columns
   user: string | null;

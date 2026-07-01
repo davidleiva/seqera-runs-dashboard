@@ -8,6 +8,7 @@ function makeRun(overrides: Partial<RunVM> = {}): RunVM {
     pipeline: 'nf-core/rnaseq',
     status: 'SUCCEEDED',
     needsAttention: false,
+    attentionLabel: null,
     user: 'alice',
     submittedAt: new Date('2026-06-01T10:00:00Z'),
     submittedLabel: 'Jun 1 · 10:00',

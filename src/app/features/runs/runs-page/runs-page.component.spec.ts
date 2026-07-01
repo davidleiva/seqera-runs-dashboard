@@ -15,6 +15,7 @@ function makeRun(overrides: Partial<RunDetailVM> = {}): RunDetailVM {
     pipeline: 'nf-core/test',
     status: 'SUCCEEDED',
     needsAttention: false,
+    attentionLabel: null,
     user: 'alice',
     submittedAt: new Date('2026-06-01T10:00:00Z'),
     submittedLabel: 'Jun 1 · 10:00',

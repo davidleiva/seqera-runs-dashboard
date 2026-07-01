@@ -9,7 +9,8 @@ import type { TaskBreakdown } from '../../core/models';
     @if (breakdown()) {
       <div class="task-bar__segments"
            role="img"
-           [attr.aria-label]="ariaLabel()">
+           [attr.aria-label]="summaryText()"
+           [title]="summaryText()">
         @if (breakdown()!.succeeded > 0) {
           <div class="task-bar__seg task-bar__seg--succeeded"
                [style.flex]="breakdown()!.succeeded"></div>
@@ -42,15 +43,16 @@ import type { TaskBreakdown } from '../../core/models';
 export class TaskBarComponent {
   readonly breakdown = input<TaskBreakdown | null>(null);
 
-  protected readonly ariaLabel = computed(() => {
+  /** Same text drives the aria-label and the hover tooltip — one explanation, one source. */
+  protected readonly summaryText = computed(() => {
     const b = this.breakdown();
     if (!b) return '';
-    const parts: string[] = [`${b.total} tasks`];
+    const parts: string[] = [];
     if (b.succeeded) parts.push(`${b.succeeded} succeeded`);
     if (b.failed) parts.push(`${b.failed} failed`);
     if (b.aborted) parts.push(`${b.aborted} aborted`);
     if (b.cached) parts.push(`${b.cached} cached`);
     if (b.running) parts.push(`${b.running} running`);
-    return parts.join(', ');
+    return `${parts.join(' · ')} of ${b.total}`;
   });
 }

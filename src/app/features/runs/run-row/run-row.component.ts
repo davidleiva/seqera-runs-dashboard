@@ -23,15 +23,13 @@ import { UserCellComponent } from '../../../shared/user-cell/user-cell.component
   ],
   template: `
     <td class="run-row__cell run-row__cell--status">
-      <app-status-pill
-        [status]="run().status"
-        [exitLabel]="exitLabel()" />
+      <app-status-pill [status]="run().status" />
     </td>
     <td class="run-row__cell run-row__cell--identity">
       <app-run-identity
         [name]="run().name"
         [pipeline]="run().pipeline"
-        [needsAttention]="run().needsAttention" />
+        [attentionLabel]="run().attentionLabel" />
     </td>
     <td class="run-row__cell run-row__cell--user">
       <app-user-cell [user]="run().user" />
@@ -85,12 +83,6 @@ export class RunRowComponent {
   readonly run = input.required<RunVM>();
   readonly selected = input<boolean>(false);
   readonly select = output<string>();
-
-  protected readonly exitLabel = computed(() => {
-    const r = this.run();
-    if (r.status !== 'FAILED') return null;
-    return r.exitStatus !== null ? String(r.exitStatus) : null;
-  });
 
   protected readonly isFailed    = computed(() => this.run().status === 'FAILED');
   protected readonly isRunning   = computed(() => this.run().status === 'RUNNING');

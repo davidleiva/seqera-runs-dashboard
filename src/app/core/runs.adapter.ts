@@ -2,7 +2,7 @@ import type { RawRun } from './models/raw-run.model';
 import type { RunError, RunStatus, RunVM } from './models/run.model';
 import type { RunDetailVM } from '../features/runs/run-drawer/run-drawer.models';
 import { costFmt, durationFmt, formatSubmitted } from './derive/format.utils';
-import { needsAttention } from './derive/attention.utils';
+import { attentionLabel, needsAttention } from './derive/attention.utils';
 import { taskBreakdown } from './derive/task.utils';
 
 const VALID_STATUSES: ReadonlySet<string> = new Set([
@@ -49,6 +49,7 @@ export function toRunVM(raw: RawRun): RunVM {
     pipeline: raw.projectName,
     status,
     needsAttention: needsAttention(raw),
+    attentionLabel: attentionLabel(raw, status),
     user: raw.userName,
     submittedAt: new Date(raw.submit),
     submittedLabel: formatSubmitted(raw.submit),

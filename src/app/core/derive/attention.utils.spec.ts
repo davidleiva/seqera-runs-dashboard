@@ -1,5 +1,5 @@
 import type { RawRun } from '../models/raw-run.model';
-import { needsAttention } from './attention.utils';
+import { attentionLabel, attentionReasons, needsAttention } from './attention.utils';
 
 function makeRaw(overrides: Partial<RawRun> = {}): RawRun {
   return {
@@ -101,5 +101,64 @@ describe('needsAttention', () => {
   it('returns true for FAILED even with exitStatus 0 (viralrecon edge case)', () => {
     const raw = makeRaw({ status: 'FAILED', exitStatus: 0, errorMessage: null });
     expect(needsAttention(raw)).toBe(true);
+  });
+});
+
+describe('attentionReasons', () => {
+  it('describes a failed task with correct singular/plural', () => {
+    const raw = makeRaw({
+      status: 'SUCCEEDED',
+      stats: { ...makeRaw().stats, failedCount: 1 },
+    });
+    expect(attentionReasons(raw)).toEqual(['1 task failed']);
+  });
+
+  it('describes retries with correct singular/plural', () => {
+    const raw = makeRaw({ load: { ...makeRaw().load, retries: 1 } });
+    expect(attentionReasons(raw)).toEqual(['1 retry']);
+    const rawMany = makeRaw({ load: { ...makeRaw().load, retries: 3 } });
+    expect(attentionReasons(rawMany)).toEqual(['3 retries']);
+  });
+
+  it('describes low CPU efficiency', () => {
+    const raw = makeRaw({ load: { ...makeRaw().load, cpuEfficiency: 12 } });
+    expect(attentionReasons(raw)).toEqual(['low CPU efficiency (12%)']);
+  });
+
+  it('combines multiple reasons in order', () => {
+    const raw = makeRaw({
+      status: 'SUCCEEDED',
+      stats: { ...makeRaw().stats, failedCount: 1 },
+      load: { ...makeRaw().load, retries: 1 },
+    });
+    expect(attentionReasons(raw)).toEqual(['1 task failed', '1 retry']);
+  });
+
+  it('is empty for a clean run', () => {
+    expect(attentionReasons(makeRaw())).toEqual([]);
+  });
+
+  it('ignores FAILED-only status — no reason needed, red status already signals it', () => {
+    expect(attentionReasons(makeRaw({ status: 'FAILED' }))).toEqual([]);
+  });
+});
+
+describe('attentionLabel', () => {
+  it('is null on FAILED regardless of reasons — no marker there', () => {
+    const raw = makeRaw({ status: 'FAILED', load: { ...makeRaw().load, retries: 1 } });
+    expect(attentionLabel(raw, 'FAILED')).toBeNull();
+  });
+
+  it('is null for a clean SUCCEEDED run', () => {
+    expect(attentionLabel(makeRaw(), 'SUCCEEDED')).toBeNull();
+  });
+
+  it('composes "Succeeded, but ..." from the reasons (serene_albattani case)', () => {
+    const raw = makeRaw({
+      status: 'SUCCEEDED',
+      stats: { ...makeRaw().stats, failedCount: 1 },
+      load: { ...makeRaw().load, retries: 1 },
+    });
+    expect(attentionLabel(raw, 'SUCCEEDED')).toBe('Succeeded, but 1 task failed · 1 retry');
   });
 });

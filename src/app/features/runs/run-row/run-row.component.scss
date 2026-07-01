@@ -54,6 +54,11 @@
       border-left: 3px solid transparent;
     }
 
+    &--cost,
+    &--retries {
+      text-align: right;
+    }
+
     &--action {
       width: 32px;
       padding: 0 4px;

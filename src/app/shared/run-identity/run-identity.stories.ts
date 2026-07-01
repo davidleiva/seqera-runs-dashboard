@@ -6,7 +6,7 @@ const meta: Meta<RunIdentityComponent> = {
   component: RunIdentityComponent,
   tags: ['autodocs'],
   argTypes: {
-    needsAttention: { control: 'boolean' },
+    attentionLabel: { control: 'text' },
   },
   parameters: { layout: 'padded' },
 };
@@ -18,7 +18,7 @@ export const Default: Story = {
   args: {
     name: 'rnaseq_community-showcase_20260622_ccc9e30675f0468',
     pipeline: 'nf-core/rnaseq',
-    needsAttention: false,
+    attentionLabel: null,
   },
 };
 
@@ -26,7 +26,7 @@ export const NeedsAttention: Story = {
   args: {
     name: 'serene_albattani',
     pipeline: 'nf-core/rnaseq',
-    needsAttention: true,
+    attentionLabel: 'Succeeded, but 1 task failed · 1 retry',
   },
 };
 
@@ -34,7 +34,7 @@ export const LongName: Story = {
   args: {
     name: 'viralrecon-illumina_community-showcase_20260626_5816618021e0482-extra-long-run-name-for-truncation',
     pipeline: 'nf-core/viralrecon',
-    needsAttention: false,
+    attentionLabel: null,
   },
   parameters: { layout: 'padded' },
   decorators: [() => ({ styles: ['div { max-width: 280px; }'] })],

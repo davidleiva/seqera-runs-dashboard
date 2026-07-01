@@ -85,6 +85,32 @@ export const SortByCost: Story = {
   },
 };
 
+export const SortByDuration: Story = {
+  args: {
+    runs: [...allRuns].sort((a, b) => (b.durationMs ?? -Infinity) - (a.durationMs ?? -Infinity)),
+    sort: { key: 'duration', dir: 'desc' },
+  },
+};
+
+export const SortByRetries: Story = {
+  args: {
+    runs: [...allRuns].sort((a, b) => b.retries - a.retries),
+    sort: { key: 'retries', dir: 'desc' },
+  },
+};
+
+export const NumericAlignment: Story = {
+  name: 'Right-aligned numeric columns',
+  args: {
+    runs: [
+      { ...succeededRnaseq, id: 'align-1', cost: 0.01, retries: 0 },
+      { ...succeededRnaseq, id: 'align-2', cost: 12.5, retries: 3 },
+      { ...succeededRnaseq, id: 'align-3', cost: 128.42, retries: 12 },
+    ],
+    sort: { key: 'cost', dir: 'desc' },
+  },
+};
+
 // ─── Interaction stories ──────────────────────────────────────────────────────
 
 export const SelectingRun: Story = {
@@ -121,5 +147,22 @@ export const SortingInteraction: Story = {
     const durationBtn = canvas.getByRole('button', { name: /duration/i });
     await userEvent.click(durationBtn);
     await expect(args.sortChange).toHaveBeenCalledWith({ key: 'duration', dir: 'desc' });
+  },
+};
+
+export const SortingNewColumns: Story = {
+  name: 'Interaction: Sort Run/User/Retries headers',
+  args: { runs: allRuns, sortChange: fn() },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: /^run/i }));
+    await expect(args.sortChange).toHaveBeenLastCalledWith({ key: 'name', dir: 'desc' });
+
+    await userEvent.click(canvas.getByRole('button', { name: /^user/i }));
+    await expect(args.sortChange).toHaveBeenLastCalledWith({ key: 'user', dir: 'desc' });
+
+    await userEvent.click(canvas.getByRole('button', { name: /^retries/i }));
+    await expect(args.sortChange).toHaveBeenLastCalledWith({ key: 'retries', dir: 'desc' });
   },
 };

@@ -42,8 +42,26 @@ import { SkeletonRowComponent } from '../../../shared/skeleton-row/skeleton-row.
                   </span>
                 </button>
               </th>
-              <th scope="col" role="columnheader" class="col-identity">Run</th>
-              <th scope="col" role="columnheader" class="col-user">User</th>
+              <th scope="col" role="columnheader" class="col-identity"
+                  [attr.aria-sort]="sortAttr('name')">
+                <button class="sort-btn" [class.sort-btn--active]="sort().key === 'name'"
+                        (click)="onSort('name')">
+                  Run
+                  <span class="material-icons sort-icon" aria-hidden="true">
+                    {{ sortIcon('name') }}
+                  </span>
+                </button>
+              </th>
+              <th scope="col" role="columnheader" class="col-user"
+                  [attr.aria-sort]="sortAttr('user')">
+                <button class="sort-btn" [class.sort-btn--active]="sort().key === 'user'"
+                        (click)="onSort('user')">
+                  User
+                  <span class="material-icons sort-icon" aria-hidden="true">
+                    {{ sortIcon('user') }}
+                  </span>
+                </button>
+              </th>
               <th scope="col" role="columnheader" class="col-time"
                   [attr.aria-sort]="sortAttr('submitted')">
                 <button class="sort-btn" [class.sort-btn--active]="sort().key === 'submitted'"
@@ -75,7 +93,16 @@ import { SkeletonRowComponent } from '../../../shared/skeleton-row/skeleton-row.
                   </span>
                 </button>
               </th>
-              <th scope="col" role="columnheader" class="col-retries">Retries</th>
+              <th scope="col" role="columnheader" class="col-retries"
+                  [attr.aria-sort]="sortAttr('retries')">
+                <button class="sort-btn" [class.sort-btn--active]="sort().key === 'retries'"
+                        (click)="onSort('retries')">
+                  Retries
+                  <span class="material-icons sort-icon" aria-hidden="true">
+                    {{ sortIcon('retries') }}
+                  </span>
+                </button>
+              </th>
               <th scope="col" role="columnheader" class="col-executor">Executor</th>
               <th scope="col" role="columnheader" class="col-action" aria-label="Details"></th>
             </tr>
