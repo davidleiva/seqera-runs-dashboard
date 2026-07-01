@@ -6,17 +6,26 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "storybook": "ng run seqera-runs-dashboard:storybook",
+    "build-storybook": "ng run seqera-runs-dashboard:build-storybook"
   },
   "private": true,
   "packageManager": "npm@11.12.1",
   "dependencies": {
+    "@angular/cdk": "^22.0.2",
     "@angular/common": "^22.0.0",
     "@angular/compiler": "^22.0.0",
     "@angular/core": "^22.0.0",
     "@angular/forms": "^22.0.0",
+    "@angular/material": "^22.0.2",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@formkit/auto-animate": "^0.9.0",
+    "material-icons": "^1.13.14",
+    "motion": "^12.42.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -27,6 +36,15 @@
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "storybook": "^10.4.6",
+    "@storybook/angular": "^10.4.6",
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/addon-docs": "^10.4.6",
+    "@angular-devkit/build-angular": "^22.0.0",
+    "@angular-devkit/architect": "^0.2200.0",
+    "@angular-devkit/core": "^22.0.0",
+    "@angular/platform-browser-dynamic": "^22.0.0",
+    "@compodoc/compodoc": "^2.0.0"
   }
 }

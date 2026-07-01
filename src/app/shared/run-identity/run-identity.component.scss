@@ -1,0 +1,57 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--c-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__pipeline {
+    font-size: 0.75rem;
+    color: var(--c-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--c-warn-text);
+    background: var(--c-warn-bg);
+    border: 1px solid var(--c-warn-border);
+    border-radius: var(--radius-pill);
+    padding: 1px 6px 1px 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &__tag-icon {
+    font-size: 11px;
+    line-height: 1;
+  }
+}

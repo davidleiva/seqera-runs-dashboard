@@ -1,0 +1,71 @@
+:host {
+  display: inline-flex;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 1px solid transparent;
+
+  &__icon {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  &__label {
+    line-height: 1;
+  }
+
+  &__exit {
+    font-size: 0.75rem;
+    opacity: 0.85;
+  }
+
+  &--succeeded {
+    color: var(--c-ok-text);
+    background: var(--c-ok-bg);
+    border-color: var(--c-ok-border);
+  }
+
+  &--failed {
+    color: var(--c-fail-text);
+    background: var(--c-fail-bg);
+    border-color: var(--c-fail-border);
+  }
+
+  &--running {
+    color: var(--c-run-text);
+    background: var(--c-run-bg);
+    border-color: var(--c-run-border);
+
+    .pill__icon {
+      animation: spin 1.4s linear infinite;
+    }
+  }
+
+  &--submitted {
+    color: var(--c-cancel-text);
+    background: var(--c-cancel-bg);
+    border-color: var(--c-cancel-border);
+  }
+
+  &--cancelled {
+    color: var(--c-cancel-text);
+    background: var(--c-cancel-bg);
+    border-color: var(--c-cancel-border);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill__icon { animation: none !important; }
+}

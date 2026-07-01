@@ -1,0 +1,45 @@
+:host {
+  display: block;
+}
+
+.health-bar {
+  display: grid;
+  gap: 12px;
+}
+
+.health-bar__headline {
+  display: inline-flex;
+  width: fit-content;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+  padding: 7px 10px;
+  color: var(--c-warn-text);
+  background: var(--c-warn-bg);
+  border: 1px solid var(--c-warn-border);
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  .material-icons {
+    font-size: 17px;
+  }
+}
+
+.health-bar__cards {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(128px, 1fr));
+  gap: 8px;
+
+  > [role='listitem'] {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 920px) {
+  .health-bar__cards {
+    overflow-x: auto;
+    grid-template-columns: repeat(6, minmax(144px, 1fr));
+    padding: 3px;
+  }
+}

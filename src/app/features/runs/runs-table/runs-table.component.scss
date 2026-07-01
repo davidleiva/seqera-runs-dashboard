@@ -1,0 +1,116 @@
+:host {
+  display: block;
+}
+
+.runs-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: var(--c-surface);
+}
+
+.runs-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    border-bottom: 2px solid var(--c-border);
+  }
+
+  thead th {
+    background: var(--c-surface);
+    padding: 8px 12px;
+    text-align: left;
+    white-space: nowrap;
+    color: var(--c-text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    vertical-align: middle;
+
+    &.col-status { padding-left: 15px; min-width: 120px; }
+    &.col-identity { min-width: 200px; }
+    &.col-tasks { min-width: 140px; }
+    &.col-action { width: 40px; }
+  }
+}
+
+.sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  border-radius: var(--radius);
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 3px;
+  }
+
+  &--active {
+    color: var(--c-primary);
+  }
+}
+
+.sort-icon {
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0.6;
+
+  .sort-btn--active & {
+    opacity: 1;
+  }
+}
+
+// ─── Empty state ───────────────────────────────────────────────────────────────
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 56px 24px;
+  color: var(--c-text-muted);
+  text-align: center;
+
+  &__icon {
+    font-size: 48px;
+    color: var(--c-border);
+  }
+
+  &__message {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  &__clear {
+    background: var(--c-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 8px 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity var(--motion-fast) var(--ease-out);
+
+    &:hover { opacity: 0.88; }
+    &:focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 3px;
+    }
+  }
+}

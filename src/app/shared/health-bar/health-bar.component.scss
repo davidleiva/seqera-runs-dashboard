@@ -1,0 +1,78 @@
+.health-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 24px 16px;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+}
+
+// ─── Criticality headline ──────────────────────────────────────────────────
+
+.health-bar__headline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  align-self: flex-start;
+
+  .material-icons { font-size: 16px; }
+
+  &--warn {
+    background: var(--c-warn-bg);
+    color: var(--c-warn-text);
+    border: 1px solid var(--c-warn-border);
+  }
+
+  &--ok {
+    background: var(--c-ok-bg);
+    color: var(--c-ok-text);
+    border: 1px solid var(--c-ok-border);
+  }
+}
+
+// ─── KPI card row ─────────────────────────────────────────────────────────────
+
+.health-bar__cards {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// ─── Active filter chip ───────────────────────────────────────────────────────
+
+.health-bar__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: rgba(66, 86, 231, 0.08);
+  border: 1px solid rgba(66, 86, 231, 0.25);
+  color: var(--c-primary);
+  padding: 4px 8px 4px 10px;
+  border-radius: var(--radius-pill);
+  align-self: flex-start;
+
+  .chip__icon { font-size: 14px; }
+}
+
+.chip__clear {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  border-radius: 50%;
+  transition: background var(--motion-fast) var(--ease-out);
+
+  .material-icons { font-size: 16px; }
+
+  &:hover { background: rgba(66, 86, 231, 0.12); }
+  &:focus-visible { outline: 2px solid var(--c-primary); outline-offset: 2px; }
+}
