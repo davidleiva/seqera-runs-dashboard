@@ -28,7 +28,7 @@ Two routes, one screen:
 
 ### What the user needs at a glance
 
-The health bar answers three questions without scrolling:
+The health bar answers 3 questions without scrolling:
 
 1. **Is anything broken right now?** — the criticality headline ("3 runs need your attention") fires in amber whenever failures or attention-needed counts are non-zero. When everything's fine, it reads calm ("All runs healthy"). The state is driven by computed KPIs and `aria-live="polite"` so screen readers announce changes.
 
