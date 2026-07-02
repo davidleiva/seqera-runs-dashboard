@@ -1,0 +1,224 @@
+:host {
+  display: block;
+}
+
+.runs-summary {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  // `--card-radius` lets a sticky wrapper (e.g. runs-page.component.scss)
+  // square this off while pinned, without this component needing to know
+  // anything about sticky/stuck state itself — falls back to the normal
+  // token when unset (every other consumer, including /showcase).
+  border-radius: var(--card-radius, var(--radius));
+}
+
+.runs-summary__verdict {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.runs-summary__headline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--c-text);
+  font-variant-numeric: tabular-nums;
+
+  .material-icons {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  &--attention {
+    cursor: pointer;
+    padding: 6px 10px;
+    color: var(--c-warn-text);
+    background: var(--c-warn-bg);
+    border: 1px solid var(--c-warn-border);
+    border-radius: var(--radius);
+    transition: background var(--motion-fast) var(--ease-out);
+
+    &:hover {
+      background: var(--c-warn-border);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  &--active {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+  }
+
+  &--calm {
+    color: var(--c-ok-text);
+  }
+}
+
+.runs-summary__meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--c-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.runs-summary__bar-row {
+  display: grid;
+  gap: 8px;
+
+  // A cross-cutting lens (attention/insight) doesn't map to a single status
+  // segment, so we visually recede the status distribution. Dim ONLY the
+  // colour-carrying elements — the bar and the legend dots — never the legend
+  // text. At 0.55 opacity the label text drops below the 4.5:1 AA contrast
+  // floor; the dots aren't text and carry no meaning of their own, so dimming
+  // them is safe.
+  &--dimmed {
+    .runs-summary__bar,
+    .runs-summary__dot {
+      opacity: 0.55;
+      transition: opacity var(--motion-fast) var(--ease-out);
+    }
+  }
+}
+
+.runs-summary__bar {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  gap: 1px;
+  overflow: hidden;
+  background: var(--c-border);
+  border-radius: 5px;
+}
+
+.runs-summary__bar-empty {
+  flex: 1;
+}
+
+.runs-summary__seg {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  transition:
+    flex var(--motion-base) var(--ease-out),
+    opacity var(--motion-fast) var(--ease-out);
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 1px;
+  }
+
+  &--active {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 1px;
+  }
+
+  &--dimmed {
+    opacity: 0.35;
+  }
+}
+
+.runs-summary__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.runs-summary__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  color: var(--c-text);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out);
+
+  &:hover {
+    background: var(--c-bg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+  }
+
+  &--active {
+    background: var(--c-bg);
+    border-color: var(--c-border);
+    font-weight: 700;
+  }
+}
+
+.runs-summary__dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.runs-summary__insight {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin: 0;
+  padding: 7px 10px;
+  color: var(--c-text);
+  text-align: left;
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-out);
+
+  .material-icons {
+    font-size: 16px;
+    color: var(--c-accent-violet);
+  }
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+  }
+
+  &--active {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 1px var(--c-primary) inset;
+  }
+}

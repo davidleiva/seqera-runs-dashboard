@@ -1,0 +1,449 @@
+:host {
+  display: block;
+  height: 100dvh;
+  // Shared with `run-drawer` (fixed-positioned, several components down the
+  // tree) so it can bound itself to the content area without duplicating
+  // these pixel values — custom properties inherit through the DOM
+  // regardless of Angular's per-component style encapsulation.
+  --topbar-h: 52px;
+  --sidebar-w: 210px;
+}
+
+.shell {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: #0b1f33;
+  color: rgba(255 255 255 / 0.8);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-backdrop {
+  // Same role as the run-drawer's own backdrop: dim the content behind an
+  // open overlay and give a large, obvious tap target to dismiss it.
+  // `display: none` outside the collapse breakpoint (below) — otherwise a
+  // stray `sidebarOpen` true from a previous narrow width would render an
+  // invisible-but-clickable button over the page after resizing back up.
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  padding: 0;
+  border: none;
+  background: rgb(11 31 51 / 45%);
+  cursor: default;
+}
+
+.sidebar__logo {
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid rgba(255 255 255 / 0.07);
+  flex-shrink: 0;
+}
+
+.sidebar__workspace {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin: 8px 8px 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out);
+
+  &:hover {
+    background: rgba(255 255 255 / 0.07);
+  }
+}
+
+.sidebar__workspace-icon {
+  font-size: 16px;
+  color: rgba(255 255 255 / 0.5);
+}
+
+.sidebar__workspace-name {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255 255 255 / 0.9);
+}
+
+.sidebar__workspace-caret {
+  font-size: 16px;
+  color: rgba(255 255 255 / 0.4);
+}
+
+.sidebar__nav {
+  list-style: none;
+  padding: 4px 8px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sidebar__group-label {
+  padding: 12px 8px 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  // 0.55 white over the #0b1f33 navy ≈ 5.9:1 — clears AA for text. These
+  // labels are exposed to AT (no aria-hidden), so they must meet contrast.
+  color: rgba(255 255 255 / 0.55);
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: var(--radius);
+  color: rgba(255 255 255 / 0.65);
+  text-decoration: none;
+  font-size: 0.84rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+
+  .material-icons {
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  &:hover:not(&--disabled) {
+    background: rgba(255 255 255 / 0.08);
+    color: #fff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+  }
+
+  &--active {
+    background: rgba(66 86 231 / 0.4);
+    color: #fff;
+  }
+
+  &--disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+.sidebar__footer {
+  margin-top: auto;
+  padding: 12px 8px;
+  border-top: 1px solid rgba(255 255 255 / 0.07);
+  flex-shrink: 0;
+}
+
+.sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out);
+
+  &:hover {
+    background: rgba(255 255 255 / 0.07);
+  }
+}
+
+.sidebar__avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar__username {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(255 255 255 / 0.8);
+}
+
+// ─── Main area (header + content) ─────────────────────────────────────────────
+
+.main-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-bg);
+  overflow: hidden;
+}
+
+// ─── Top bar ──────────────────────────────────────────────────────────────────
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-h);
+  padding: 0 24px;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.topbar__left {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Hidden above the sidebar-collapse breakpoint (see the responsive section
+// below) — the sidebar is always on-screen there, so there's nothing to
+// toggle. Same visual weight as `.topbar__refresh`.
+.topbar__menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  cursor: pointer;
+  transition:
+    background var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
+
+  .material-icons {
+    font-size: 20px;
+  }
+
+  &:hover {
+    background: var(--c-bg);
+    color: var(--c-text);
+    border-color: #c5cdd8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+  }
+}
+
+.topbar__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.82rem;
+}
+
+.topbar__breadcrumb-item {
+  font-weight: 600;
+  color: var(--c-text);
+
+  &--muted {
+    font-weight: 400;
+    color: var(--c-text-muted);
+  }
+}
+
+.topbar__breadcrumb-sep {
+  font-size: 16px;
+  color: var(--c-text-muted);
+}
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+// Route badge
+.topbar__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.03em;
+
+  .material-icons {
+    font-size: 13px;
+  }
+
+  &--sample {
+    background: var(--c-ok-bg);
+    color: var(--c-ok-text);
+    border: 1px solid var(--c-ok-border);
+  }
+
+  &--showcase {
+    background: rgba(139 92 246 / 0.08);
+    color: #6d28d9;
+    border: 1px solid rgba(139 92 246 / 0.2);
+  }
+}
+
+.topbar__updated {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--c-text-muted);
+
+  .material-icons {
+    font-size: 14px;
+  }
+}
+
+.topbar__refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  cursor: pointer;
+  transition:
+    background var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
+
+  .material-icons {
+    font-size: 18px;
+    transition: transform var(--motion-base) var(--ease-out);
+  }
+
+  &:hover {
+    background: var(--c-bg);
+    color: var(--c-text);
+    border-color: #c5cdd8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+  }
+
+  &--spinning .material-icons {
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// ─── Main content ──────────────────────────────────────────────────────────────
+
+// The single scroll container for the whole app, on *both* axes — sidebar
+// and topbar are fixed chrome outside this box, so this is the only element
+// in the chain that should ever own overflow. Every routed page (runs-page
+// and everything it composes — summary, filter bar, table) must stay
+// `overflow: visible` all the way down, for two reasons: so sticky
+// positioning inside them resolves against *this* scrollport instead of
+// getting trapped by a nested one, and so a table wider than the viewport
+// (many columns on a narrow screen) overflows all the way up to here rather
+// than clipping partway. That second point rules out giving the table's own
+// wrapper an `overflow-x: auto` of its own, which would seem like the more
+// targeted fix — but the CSS overflow spec forces `overflow-y` to compute as
+// non-`visible` on any box whose `overflow-x` isn't `visible` too (the
+// "either both visible or neither" rule), which would silently turn that
+// wrapper into the sticky `<thead>`'s resolved scroll ancestor instead of
+// this one, breaking it. Scrolling the whole content pane sideways here
+// avoids that trap entirely, at the cost of the summary/filter bar scrolling
+// along with the table instead of staying pinned horizontally — an
+// acceptable trade for what's already a many-columns/narrow-viewport edge
+// case.
+.main-content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+
+@media (max-width: 900px) {
+  :host {
+    // The sidebar no longer occupies permanent layout space below this
+    // width (it's `position: fixed`, off-canvas by default — see below), so
+    // `--sidebar-w` — shared with `run-drawer` and other content bounded to
+    // "right of the sidebar" — correctly becomes 0 instead of reserving a
+    // gap for a rail that's no longer there.
+    --sidebar-w: 0px;
+  }
+
+  // Off-canvas instead of an icon-only rail: fully hidden by default,
+  // slides in over the content (not pushing it) once opened via the
+  // hamburger button in the topbar. `position: fixed` here takes it out of
+  // `.shell`'s flex flow entirely, which is what lets `.main-area` claim
+  // the full width on its own without any extra rule.
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 30;
+    width: 210px;
+    transform: translateX(-100%);
+    transition: transform var(--motion-base) var(--ease-out);
+
+    &--open {
+      transform: translateX(0);
+    }
+  }
+
+  .sidebar-backdrop {
+    display: block;
+  }
+
+  .topbar {
+    padding: 0 16px;
+  }
+
+  .topbar__menu-toggle {
+    display: inline-flex;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar {
+      transition: none;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar__updated {
+    display: none; // hide on very small screens
+  }
+}

@@ -1,0 +1,46 @@
+// `flex`/`min-width: 0`, not `inline-flex`: this always sits inside a
+// fixed-width table cell (runs-table now uses `table-layout: fixed`), so it
+// needs to actually fill and be constrained by that width for the name
+// below to truncate — an `inline-flex` host sizes to its own content
+// (avatar + full name) regardless of the cell's width, which just gets
+// hard-clipped by the cell's `overflow: hidden` instead of eliding cleanly.
+:host {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+
+  &__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    min-width: 0;
+    flex: 1;
+    font-size: 0.8rem;
+    color: var(--c-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__empty {
+    font-size: 0.8rem;
+    color: var(--c-text-muted);
+  }
+}

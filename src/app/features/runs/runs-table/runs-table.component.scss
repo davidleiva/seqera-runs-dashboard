@@ -1,0 +1,206 @@
+:host {
+  display: block;
+}
+
+// Real native `overflow-x: auto` — its own scrollbar, own touch/wheel
+// physics, independent of `.main-content`'s vertical scroll. This is what
+// forces the real `<thead>` below to give up `position: sticky` (see the
+// component's doc-comment for the full CSS-spec reasoning); `.sticky-
+// header-clone` fakes that visual result instead, driven from TS.
+//
+// No bottom border/radius here — `mat-paginator` below supplies the bottom
+// of the card (its own top border is the divider line between the two),
+// so together they read as one seamless card.
+.table-horizontal-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--c-border);
+  border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--c-surface);
+}
+
+.table-pagination-container {
+  width: 100%;
+}
+
+.runs-table {
+  width: 100%;
+  border-collapse: collapse;
+  // `table-layout: auto` (the default) sizes each column to fit its widest
+  // *unclipped* content across every row — with dozens of runs, some
+  // inevitably have a long pipeline name or run id, pushing the table wider
+  // than it needs to be well before genuinely running out of room. `fixed`
+  // instead sizes columns purely from the widths declared below, so the
+  // table's floor is exactly their sum regardless of content — it only
+  // needs to grow past that (and trigger this container's horizontal
+  // scrollbar) on genuinely narrow viewports. Cells with content that can
+  // exceed their column's fixed width still need their own truncation
+  // (ellipsis) — see `.run-row__cell` in run-row.component.scss.
+  table-layout: fixed;
+
+  thead tr {
+    border-bottom: 2px solid var(--c-border);
+  }
+
+  thead th {
+    background: var(--c-surface);
+    padding: 8px 12px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--c-text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    // Deliberately NOT `position: sticky` — see the component doc-comment:
+    // this table wrapper's own `overflow-x: auto` would hijack that
+    // reference frame away from `.main-content`, breaking it. The visible
+    // "stuck" effect comes from `.sticky-header-clone` instead.
+    vertical-align: middle;
+
+    &.col-status    { padding-left: 15px; width: 150px; }
+    &.col-identity  { width: 180px; }
+    &.col-user      { width: 100px; }
+    &.col-time      { width: 115px; }
+    &.col-duration  { width: 105px; }
+    &.col-tasks     { width: 105px; }
+    &.col-cost      { width: 85px; }
+    &.col-retries   { width: 95px; }
+    &.col-executor  { width: 120px; }
+    &.col-action    { width: 32px; }
+    &.col-cost, &.col-retries { text-align: right; }
+  }
+}
+
+.sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  border-radius: var(--radius);
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 3px;
+  }
+
+  &--active {
+    color: var(--c-primary);
+  }
+}
+
+.sort-icon {
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0.6;
+
+  .sort-btn--active & {
+    opacity: 1;
+  }
+}
+
+// ─── Fake sticky header clone ───────────────────────────────────────────────────
+// Visual-only stand-in for the real `<thead>` once it scrolls above the
+// sticky summary/filters (desktop) or the topbar (mobile) — `aria-hidden`
+// on the host because the real header is still in the DOM underneath and
+// remains what accessibility tools see; this is purely a sighted-user
+// (mouse/touch) affordance. Its cells reuse the exact same `.sort-btn`
+// look, just with `tabindex="-1"` since interactive descendants of an
+// `aria-hidden` container must not be reachable by keyboard.
+.sticky-header-clone {
+  position: fixed;
+  z-index: 10;
+  overflow: hidden;
+  background: var(--c-surface);
+  border-bottom: 2px solid var(--c-border);
+  box-shadow: 0 1px 2px rgb(11 31 51 / 8%);
+
+  &__inner {
+    display: flex;
+    height: 100%;
+  }
+
+  &__cell {
+    flex-shrink: 0;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--c-text-muted);
+
+    &--right {
+      justify-content: flex-end;
+    }
+  }
+}
+
+// ─── Paginator ───────────────────────────────────────────────────────────────────
+
+mat-paginator {
+  display: block;
+  border: 1px solid var(--c-border);
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--c-surface);
+}
+
+// ─── Empty state ───────────────────────────────────────────────────────────────
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 56px 24px;
+  color: var(--c-text-muted);
+  text-align: center;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: var(--c-surface);
+
+  &__icon {
+    font-size: 48px;
+    color: var(--c-border);
+  }
+
+  &__message {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  &__clear {
+    background: var(--c-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 8px 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity var(--motion-fast) var(--ease-out);
+
+    &:hover { opacity: 0.88; }
+    &:focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 3px;
+    }
+  }
+}

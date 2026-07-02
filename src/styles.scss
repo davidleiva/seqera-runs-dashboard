@@ -1,0 +1,46 @@
+@use '@angular/material' as mat;
+@use './styles/tokens';
+@use './styles/motion';
+@use './styles/a11y';
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: 'Inter Variable',
+      density: 0,
+    )
+  );
+
+  // The paginator's page-size selector is the only `mat-select` in the app,
+  // so overriding these two M3 tokens at the theme level (rather than
+  // scoping per-component, which would need `::ng-deep` since the dropdown
+  // panel renders in a CDK overlay outside any component's view) is safe:
+  // idle outline color matches the topbar's icon buttons (`.topbar__refresh`/
+  // `.topbar__menu-toggle`, both `border-color: var(--c-border)`), and the
+  // dropdown panel goes back to plain white instead of M3's tinted
+  // "surface container" default.
+  --mat-form-field-outlined-outline-color: var(--c-border);
+  --mat-select-panel-background-color: var(--c-surface);
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  font-family: 'Inter Variable', system-ui, sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

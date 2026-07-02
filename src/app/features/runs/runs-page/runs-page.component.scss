@@ -1,0 +1,165 @@
+:host {
+  display: block;
+}
+
+// No bounded height, no overflow of its own — `.main-content` (app.scss) is
+// the single vertical scroll container for the whole app; this page just
+// grows to whatever height its content needs.
+.page {
+  display: block;
+}
+
+// ─── Error state ─────────────────────────────────────────────────────────────
+
+.page__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 24px;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  background: var(--c-fail-bg);
+  border: 1px solid var(--c-fail-border);
+  color: var(--c-fail-text);
+
+  .material-icons {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.875rem;
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 0.8rem;
+    color: var(--c-text-muted);
+  }
+}
+
+// ─── Layout / scroll architecture ───────────────────────────────────────────────
+//
+// `--summary-offset` has no `+ 16px` gap folded in: the 16px flex `gap`
+// below is only meant to apply while summary/filters are each in normal
+// flow. Once both are stuck they should sit flush together, so filters'
+// sticky `top` is exactly summary's *measured* height (via the component's
+// ResizeObserver — summary's own height isn't constant, the criticality
+// alert only renders when runs need attention).
+:host {
+  --summary-offset: var(--summary-sticky-h, 0px);
+}
+
+// Single wrapper for everything this page renders — one place owning the
+// page's own gutter/centering, `gap` (not per-element margin) for the 16px
+// spacing between rows. No `width: fit-content` trick here: the table below
+// owns its own horizontal scrollbar instead of ever needing this box to grow
+// past the viewport, so there's no `position: sticky; left: 0` that needs
+// "travel room".
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  background: var(--c-bg);
+}
+
+@media (max-width: 720px) {
+  .content {
+    padding: 12px;
+  }
+}
+
+.page-title,
+.summary-container,
+.filters-container {
+  width: 100%;
+}
+
+.page-title h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 650;
+  color: var(--c-text);
+}
+
+// Sticky on desktop only — see CLAUDE.md's closed decision: it's tall
+// relative to a mobile viewport (alert + bar + legend + insight), so it
+// flows normally there instead of eating into the table's space.
+//
+// `--card-radius` is consumed by `app-runs-summary`'s own `.runs-summary`
+// (runs-summary.component.scss) and `app-filter-bar`'s `.filter-bar`
+// (filter-bar.component.scss) — a rounded card flush against the topbar
+// (summary) or against another stuck card (filters, sitting flush below
+// summary once both are pinned — see `--summary-offset` above) reads as a
+// visual glitch, not a corner. `.is-stuck` is set from TS by comparing each
+// element's live position against its own resolved sticky `top`, not
+// guessed from scroll position.
+.summary-container {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+
+  &.is-stuck {
+    --card-radius: 0px;
+  }
+}
+
+@media (max-width: 720px) {
+  .summary-container {
+    // `position: sticky` stays set (not `static`) for consistency/possible
+    // future horizontal-sticky needs — `top: auto` is what actually opts
+    // this out of *vertical* stickiness.
+    top: auto;
+  }
+}
+
+// Sticky on desktop only too — only the table's own header (the fake
+// `.sticky-header-clone` inside `app-runs-table`) stays pinned on mobile;
+// summary and filters both just flow away there.
+.filters-container {
+  position: sticky;
+  top: var(--summary-offset, 0px);
+  z-index: 4;
+
+  &.is-stuck {
+    --card-radius: 0px;
+  }
+}
+
+@media (max-width: 720px) {
+  .filters-container {
+    top: auto;
+  }
+}
+
+// ─── Drawer overlay ─────────────────────────────────────────────────────────────
+// `position: fixed` bounded to the content area via the shared
+// `--topbar-h`/`--sidebar-w` vars (app.scss/app.ts) — this page has no
+// stable viewport-sized box to anchor an `absolute` overlay to (it's
+// auto-height, taller or shorter than the viewport depending on the current
+// page of rows), but the drawer still needs to sit in the same visual slot
+// — below the topbar, right of the sidebar — regardless of scroll position.
+//
+// `app-run-drawer` always renders an empty `mat-drawer-content` filler, even
+// closed, so it needs `pointer-events: none` on the host with the real
+// interactive bits (`.mat-drawer`/`.mat-drawer-backdrop`) opted back in via
+// `::ng-deep`.
+app-run-drawer {
+  position: fixed;
+  top: var(--topbar-h, 0px);
+  right: 0;
+  bottom: 0;
+  left: var(--sidebar-w, 0px);
+  z-index: 20;
+  pointer-events: none;
+
+  ::ng-deep .mat-drawer,
+  ::ng-deep .mat-drawer-backdrop {
+    pointer-events: auto;
+  }
+}

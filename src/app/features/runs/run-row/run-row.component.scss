@@ -1,0 +1,114 @@
+:host {
+  display: table-row;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  outline: none;
+
+  &:hover .run-row__cell {
+    background-color: #f0f4ff;
+  }
+
+  &:focus-visible .run-row__cell {
+    box-shadow: inset 0 0 0 2px var(--c-primary);
+  }
+
+  &.run-row--selected .run-row__cell {
+    background-color: #e8edfd;
+  }
+
+  &.run-row--failed .run-row__cell--status {
+    border-left: 3px solid var(--c-fail);
+  }
+  &.run-row--succeeded .run-row__cell--status {
+    border-left: 3px solid var(--c-ok);
+  }
+  &.run-row--running .run-row__cell--status {
+    border-left: 3px solid var(--c-run);
+  }
+  &.run-row--cancelled .run-row__cell--status,
+  &.run-row--submitted .run-row__cell--status {
+    border-left: 3px solid var(--c-cancel);
+  }
+}
+
+.run-row {
+  &__cell {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--c-border);
+    vertical-align: middle;
+    background-color: var(--c-surface);
+    transition: background-color 0.1s ease;
+    white-space: nowrap;
+    // Safety net for `table-layout: fixed` (runs-table.component.scss):
+    // columns now have a hard pixel width instead of growing to fit
+    // content, so anything without its own ellipsis handling (e.g. the
+    // submitted-date span, which is normally short enough not to need one)
+    // gets clipped cleanly instead of spilling into the next column.
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &--identity {
+      white-space: normal;
+    }
+
+    &--status {
+      border-left: 3px solid transparent;
+    }
+
+    &--cost,
+    &--retries {
+      text-align: right;
+    }
+
+    &--action {
+      padding: 0 4px;
+    }
+  }
+
+  &__time {
+    font-size: 0.8rem;
+    color: var(--c-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__retries {
+    font-size: 0.8rem;
+    color: var(--c-text-muted);
+    font-variant-numeric: tabular-nums;
+
+    &--nonzero {
+      color: var(--c-warn-text);
+      font-weight: 600;
+    }
+  }
+
+  &__status-cluster {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__attention {
+    flex-shrink: 0;
+    font-size: 15px;
+    line-height: 1;
+    color: var(--c-warn-text);
+    cursor: default;
+  }
+
+  &__chevron {
+    font-size: 18px;
+    color: var(--c-text-muted);
+    transition: color 0.1s ease, transform 0.15s ease;
+    vertical-align: middle;
+  }
+}
+
+:host.run-row--selected .run-row__chevron {
+  color: var(--c-primary);
+  transform: translateX(2px);
+}
+
+:host:hover .run-row__chevron {
+  color: var(--c-primary);
+}

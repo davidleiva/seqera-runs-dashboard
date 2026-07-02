@@ -1,0 +1,86 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.preview-header {
+  h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 650;
+    color: var(--c-text);
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 0.85rem;
+    color: var(--c-text-muted);
+  }
+}
+
+// `.preview-content` (not `.main-content`, which just wraps it in
+// `preview-shell`) is this harness's actual scroll container — mirrors
+// `.main-content` in the real app shell (app.scss).
+.preview-content {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+// Same structure as `app-runs-page`'s own `.content` (runs-page.component.scss),
+// minus the `is-stuck` square-corner refinement — that reads live scroll
+// position off `.main-content`, which isn't this harness's real scroll
+// container, so it's not worth reproducing here.
+:host {
+  --summary-offset: var(--summary-sticky-h, 0px);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.summary-container,
+.filters-container {
+  width: 100%;
+}
+
+.summary-container {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.filters-container {
+  position: sticky;
+  top: var(--summary-offset, 0px);
+  z-index: 4;
+}
+
+// `app-run-drawer` always renders `mat-drawer-content` (an empty filler
+// div) even when closed. Left alone, that transparent div would sit on top of the
+// table here and swallow row clicks. `.mat-drawer`/`.mat-drawer-backdrop` already
+// go `visibility: hidden` when closed (Material's own CSS), so this only needs to
+// re-enable clicks on those two — via `::ng-deep` since they're rendered inside
+// MatDrawerContainer's own template, not this component's.
+app-run-drawer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  // Must beat the runs table's sticky header (z-index: 2) — position:absolute
+  // with z-index:auto doesn't establish its own stacking context here, so it
+  // loses to any positive z-index sibling descendant regardless of what
+  // mat-drawer's own (locally-scoped) z-index is set to.
+  z-index: 20;
+
+  ::ng-deep .mat-drawer,
+  ::ng-deep .mat-drawer-backdrop {
+    pointer-events: auto;
+  }
+}

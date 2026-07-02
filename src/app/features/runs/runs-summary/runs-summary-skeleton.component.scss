@@ -1,0 +1,71 @@
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@mixin shimmer-base {
+  display: block;
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, #e8edf2 25%, #f4f6f8 50%, #e8edf2 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+:host {
+  display: block;
+}
+
+.runs-summary-skeleton {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  // Same `--card-radius` hook as the real `.runs-summary` — this skeleton
+  // shares its footprint exactly, including while a sticky wrapper is
+  // pinned during the ~1.2s load window.
+  border-radius: var(--card-radius, var(--radius));
+}
+
+.runs-summary-skeleton__verdict {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.runs-summary-skeleton__bar-row {
+  display: grid;
+  gap: 8px;
+}
+
+.runs-summary-skeleton__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 3px 0;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.shimmer {
+  @include shimmer-base;
+
+  &--headline { width: 260px; height: 20px; }
+  &--meta     { width: 90px;  height: 14px; }
+  &--bar      { width: 100%;  height: 10px; border-radius: 5px; }
+  &--dot      { width: 8px;   height: 8px;  border-radius: 50%; }
+  &--legend   { height: 12px; }
+  &--insight  { width: 220px; height: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer { animation: none; }
+}
