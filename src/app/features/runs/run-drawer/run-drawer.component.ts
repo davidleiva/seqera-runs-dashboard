@@ -27,10 +27,17 @@ type CopyTarget = 'error' | 'workDir';
   imports: [A11yModule, StatusPillComponent, TaskBarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @if (run(); as selectedRun) {
-      <div class="scrim" aria-hidden="true"></div>
+    @if (displayRun(); as selectedRun) {
+      <div
+        class="scrim"
+        [class.scrim--visible]="visible()"
+        [class.scrim--closing]="closing()"
+        aria-hidden="true"
+      ></div>
       <aside
         class="drawer"
+        [class.drawer--visible]="visible()"
+        [class.drawer--closing]="closing()"
         role="dialog"
         aria-modal="true"
         aria-labelledby="run-drawer-title"
@@ -342,20 +349,31 @@ export class RunDrawerComponent {
   protected readonly activeTab = signal<DrawerTab>('Overview');
   protected readonly copiedTarget = signal<CopyTarget | null>(null);
 
+  // Kept mounted for the duration of the exit transition after `run()` goes
+  // null — `@if` would otherwise destroy the drawer instantly, skipping it.
+  protected readonly displayRun = signal<RunDetailVM | null>(null);
+  // Target open/closed visual state — toggling this (rather than a one-shot
+  // keyframe animation) is what actually drives the slide/fade transition,
+  // so enter and exit go through the exact same mechanism.
+  protected readonly visible = signal(false);
+  protected readonly closing = signal(false);
+
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
   private readonly closeButton = viewChild<ElementRef<HTMLButtonElement>>('closeButton');
   private previouslyOpen = false;
   private opener: HTMLElement | null = null;
   private copyTimer: ReturnType<typeof setTimeout> | null = null;
+  private closeAnimationTimer: ReturnType<typeof setTimeout> | null = null;
+  private enterTimer: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly copyableError = computed(() => {
-    const selectedRun = this.run();
+    const selectedRun = this.displayRun();
     return selectedRun?.error?.raw ?? selectedRun?.commandLine ?? '';
   });
 
   protected readonly attentionSummary = computed(() => {
-    const selectedRun = this.run();
+    const selectedRun = this.displayRun();
     const failed = selectedRun?.tasks?.failed ?? 0;
     const retries = selectedRun?.retries ?? 0;
     const details: string[] = [];
@@ -365,7 +383,7 @@ export class RunDrawerComponent {
   });
 
   protected readonly runningSummary = computed(() => {
-    const tasks = this.run()?.tasks;
+    const tasks = this.displayRun()?.tasks;
     if (!tasks) return 'Waiting for task data.';
     return `${tasks.succeeded} succeeded · ${tasks.running ?? 0} running of ${tasks.total} tasks`;
   });
@@ -384,8 +402,67 @@ export class RunDrawerComponent {
       this.previouslyOpen = isOpen;
     });
 
+    // Drives mount → visible → hidden → unmount, staying one or two ticks
+    // behind `run()` so both the enter and exit transitions get to play.
+    // Enter: mount first (still off-screen/transparent — that's just the
+    // element's plain declared CSS, not a JS-applied style, so it needs no
+    // extra step to "commit"), then flip `visible` on the next macrotask so
+    // the transition to the open position actually runs. A macrotask
+    // (rather than requestAnimationFrame) is used deliberately: rAF can be
+    // paused indefinitely on a backgrounded/inactive tab, which would leave
+    // the drawer stuck off-screen; setTimeout always fires. Exit is the
+    // mirror: flip `visible` off immediately, unmount only once the
+    // transition duration elapses.
+    effect(() => {
+      const incoming = this.run();
+
+      if (this.closeAnimationTimer) {
+        clearTimeout(this.closeAnimationTimer);
+        this.closeAnimationTimer = null;
+      }
+      if (this.enterTimer) {
+        clearTimeout(this.enterTimer);
+        this.enterTimer = null;
+      }
+
+      const reducedMotion =
+        this.document.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches ?? false;
+
+      if (incoming) {
+        this.closing.set(false);
+        this.displayRun.set(incoming);
+        if (reducedMotion) {
+          this.visible.set(true);
+          return;
+        }
+        this.visible.set(false);
+        this.enterTimer = setTimeout(() => {
+          this.visible.set(true);
+          this.enterTimer = null;
+        }, 0);
+        return;
+      }
+
+      if (this.displayRun() === null) return;
+
+      this.visible.set(false);
+      if (reducedMotion) {
+        this.displayRun.set(null);
+        return;
+      }
+
+      this.closing.set(true);
+      this.closeAnimationTimer = setTimeout(() => {
+        this.displayRun.set(null);
+        this.closing.set(false);
+        this.closeAnimationTimer = null;
+      }, 180);
+    });
+
     this.destroyRef.onDestroy(() => {
       if (this.copyTimer) clearTimeout(this.copyTimer);
+      if (this.closeAnimationTimer) clearTimeout(this.closeAnimationTimer);
+      if (this.enterTimer) clearTimeout(this.enterTimer);
       this.opener?.focus();
     });
   }
@@ -428,7 +505,7 @@ export class RunDrawerComponent {
   }
 
   protected copyWorkDir(): void {
-    const value = this.run()?.workDir;
+    const value = this.displayRun()?.workDir;
     if (value && value !== '—') this.copy(value, 'workDir');
   }
 

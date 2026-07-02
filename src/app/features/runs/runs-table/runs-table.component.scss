@@ -2,8 +2,14 @@
   display: block;
 }
 
+// No `overflow-x: auto` here: setting overflow on either axis implicitly
+// promotes the other to `auto` too, which would make this div its own
+// (non-scrolling, unbounded-height) scroll container and break `position:
+// sticky` on `<thead>` below — its nearest real scrolling ancestor needs to
+// stay `app-runs-layout` (see runs-page-v2.component.scss), the page's single
+// scroll container, which also picks up horizontal overflow for narrow
+// viewports since it's the one actually establishing a scrollport.
 .runs-table-wrap {
-  overflow-x: auto;
   border: 1px solid var(--c-border);
   border-radius: var(--radius);
   background: var(--c-surface);
@@ -73,6 +79,13 @@
   .sort-btn--active & {
     opacity: 1;
   }
+}
+
+// ─── Paginator ───────────────────────────────────────────────────────────────────
+
+mat-paginator {
+  border-top: 1px solid var(--c-border);
+  background: var(--c-surface);
 }
 
 // ─── Empty state ───────────────────────────────────────────────────────────────

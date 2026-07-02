@@ -223,7 +223,7 @@ The test suite doesn't chase coverage on Material internals or Angular lifecycle
 
 | Feature | Reason |
 |---|---|
-| Virtual scrolling | Not needed at demo scale; `cdk-virtual-scroll-viewport` would wrap `RunsTableComponent` |
+| Virtual scrolling | `runs-page-v2` paginates via `mat-paginator` instead, for simplicity and product parity (Seqera paginates). For tens of thousands of runs, virtualisation (`cdk-virtual-scroll-viewport` wrapping `RunsTableComponent`) would be the next step |
 | Tasks / Metrics / Config / Logs drawer tabs | Overview is fully built; stub tabs show a placeholder with the correct icon. Real content requires richer data or additional fetch logic |
 | Run comparison | Multi-select state + diff view; out of scope for a single-screen layout |
 | Real history / sparklines | Needs aggregated time-series data, not present in the current schema |

@@ -22,8 +22,8 @@ export class RunsService {
     const url =
       scenario === 'sample' ? 'runs.json' : 'runs.showcase.json';
 
-    // ~600 ms delay so the skeleton shimmer is visible
-    timer(600)
+    // ~1200 ms delay so the skeleton shimmer is visible
+    timer(1200)
       .pipe(switchMap(() => this.http.get<{ runs: unknown[] }>(url)))
       .subscribe({
         next: data => {

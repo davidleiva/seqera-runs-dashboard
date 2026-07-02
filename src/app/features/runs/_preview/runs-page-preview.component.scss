@@ -1,0 +1,48 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.preview-header {
+  h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 650;
+    color: var(--c-text);
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 0.85rem;
+    color: var(--c-text-muted);
+  }
+}
+
+.preview-content {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+// `app-run-drawer-material` always renders `mat-drawer-content` (an empty filler
+// div) even when closed. Left alone, that transparent div would sit on top of the
+// table here and swallow row clicks. `.mat-drawer`/`.mat-drawer-backdrop` already
+// go `visibility: hidden` when closed (Material's own CSS), so this only needs to
+// re-enable clicks on those two — via `::ng-deep` since they're rendered inside
+// MatDrawerContainer's own template, not this component's.
+app-run-drawer-material {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  // Must beat the runs table's sticky header (z-index: 2) — position:absolute
+  // with z-index:auto doesn't establish its own stacking context here, so it
+  // loses to any positive z-index sibling descendant regardless of what
+  // mat-drawer's own (locally-scoped) z-index is set to.
+  z-index: 20;
+
+  ::ng-deep .mat-drawer,
+  ::ng-deep .mat-drawer-backdrop {
+    pointer-events: auto;
+  }
+}

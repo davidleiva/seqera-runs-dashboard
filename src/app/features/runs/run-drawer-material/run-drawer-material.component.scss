@@ -1,84 +1,46 @@
+// Outer shell only — MatDrawer/MatDrawerContainer own the slide transition,
+// backdrop, focus-trap, Esc and reduced-motion. Everything from `.drawer__header`
+// down is the same overview content/styling as `run-drawer`, just re-hosted.
+
 :host {
-  position: absolute;
-  inset: 0;
   display: block;
-  overflow: hidden;
+  height: 100%;
+}
+
+.run-drawer-material {
+  height: 100%;
   color: var(--c-text);
-  // Host element exists even when no run is selected (only its content is
-  // conditional) — without this, the empty, invisible drawer still covers
-  // the whole page and swallows clicks meant for the runs table underneath.
-  pointer-events: none;
-  // Must beat the runs table's sticky header (z-index: 2), which otherwise
-  // paints above the drawer since both are position:absolute/sticky
-  // descendants with no shared ancestor stacking context.
-  z-index: 20;
+  // This container is used as a floating overlay sibling of the real page
+  // content, not as a wrapper around it (`<mat-drawer-content>` below is
+  // intentionally empty) — without this override, Material's own theme
+  // paints an opaque background on `mat-drawer-container` that covers
+  // whatever real content sits underneath this component's host.
+  background: transparent;
 }
 
-// Enter and exit share the same transition-driven mechanism (rather than
-// keyframe animations that only play once, on mount) so both feel the same:
-// the component toggles `--visible` a frame after mount to slide/fade in,
-// and clears it to slide/fade out, unmounting only once the transition ends.
-//
-// The entering curve below is the exact time-reverse of --ease-in
-// (cubic-bezier(x1,y1,x2,y2) reversed is (1-x2,1-y2,1-x1,1-y1)) rather than
-// the global --ease-out token. --ease-out and --ease-in aren't mirrors of
-// each other, so pairing them made the exit visibly start slow while the
-// entrance front-loaded most of its travel in the first ~50ms — reading as
-// a slide out but a pop in. Mirroring the exit curve makes the entrance
-// genuinely feel like the same motion played backward.
-$drawer-enter-ease: cubic-bezier(0, 0, 0.6, 1);
-
-.scrim {
-  position: absolute;
-  inset: 0;
-  background: rgb(11 31 51 / 28%);
-  opacity: 0;
-  transition: opacity var(--motion-base) #{$drawer-enter-ease};
-  pointer-events: auto;
-
-  &--visible {
-    opacity: 1;
-  }
-
-  &--closing {
-    transition-timing-function: var(--ease-in);
-  }
+.run-drawer-material__content {
+  height: 100%;
+  // Never actually shows content (nothing is projected into it) — must stay
+  // transparent for the same reason as `.run-drawer-material` above.
+  background: transparent;
 }
 
-.drawer {
-  position: absolute;
-  inset: 0 0 0 auto;
+.run-drawer-material__panel {
   display: flex;
   width: min(680px, 100%);
   flex-direction: column;
   background: var(--c-surface);
   border-left: 1px solid var(--c-border);
   box-shadow: -12px 0 32px rgb(11 31 51 / 14%);
-  outline: 0;
-  pointer-events: auto;
-  transform: translateX(100%);
-  transition: transform var(--motion-base) #{$drawer-enter-ease};
-
-  &--visible {
-    transform: translateX(0);
-  }
-
-  &--closing {
-    transition-timing-function: var(--ease-in);
-  }
 }
 
 .drawer__header {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: start;
   padding: 20px 20px 16px 24px;
   border-bottom: 1px solid var(--c-border);
-}
-
-.drawer__status {
-  padding-top: 3px;
 }
 
 .drawer__identity {
@@ -505,14 +467,6 @@ $drawer-enter-ease: cubic-bezier(0, 0, 0.6, 1);
 }
 
 @media (max-width: 560px) {
-  .drawer__header {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .drawer__status {
-    grid-column: 1 / -1;
-  }
-
   .metadata-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

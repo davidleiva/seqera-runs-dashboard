@@ -9,6 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import autoAnimate from '@formkit/auto-animate';
+import { MatPaginator, type PageEvent } from '@angular/material/paginator';
 import type { RunVM, SortKey, SortState } from '../../../core/models';
 import { RunRowComponent } from '../run-row/run-row.component';
 import { SkeletonRowComponent } from '../../../shared/skeleton-row/skeleton-row.component';
@@ -17,7 +18,7 @@ import { SkeletonRowComponent } from '../../../shared/skeleton-row/skeleton-row.
   selector: 'app-runs-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RunRowComponent, SkeletonRowComponent],
+  imports: [RunRowComponent, SkeletonRowComponent, MatPaginator],
   template: `
     @if (!loading() && runs().length === 0) {
       <div class="empty-state" role="status">
@@ -128,20 +129,45 @@ import { SkeletonRowComponent } from '../../../shared/skeleton-row/skeleton-row.
           }
         </table>
       </div>
+
+      <mat-paginator
+        aria-label="Runs pagination"
+        [length]="effectiveTotal()"
+        [pageIndex]="pageIndex()"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="pageSizeOptions()"
+        [disabled]="loading()"
+        (page)="onPageEvent($event)"
+      />
     }
   `,
   styleUrl: './runs-table.component.scss',
   host: { class: 'runs-table-host' },
 })
 export class RunsTableComponent {
+  /** The already-paged slice — this component never filters, sorts or slices. */
   readonly runs = input.required<RunVM[]>();
   readonly selectedId = input<string | null>(null);
   readonly loading = input<boolean>(false);
   readonly sort = input<SortState>({ key: 'risk', dir: 'desc' });
 
+  /** Total rows in the filtered+sorted set (for the pager, not `runs().length`). */
+  readonly total = input<number>(0);
+  readonly pageIndex = input<number>(0);
+  readonly pageSize = input<number>(25);
+  readonly pageSizeOptions = input<number[]>([10, 25, 50]);
+
   readonly select = output<RunVM>();
   readonly sortChange = output<SortState>();
   readonly clearFilters = output<void>();
+  readonly pageChange = output<{ pageIndex: number; pageSize: number }>();
+
+  /**
+   * Falls back to `runs().length` when a caller doesn't pass `total` (e.g. the
+   * real, unpaginated `runs-page` still binds only `runs`) — so the pager reads
+   * "1–N of N" instead of a broken "0 of 0" while a real page's rows are showing.
+   */
+  protected readonly effectiveTotal = computed(() => this.total() || this.runs().length);
 
   protected readonly skeletonRows = Array(6).fill(null);
 
@@ -172,6 +198,10 @@ export class RunsTableComponent {
 
   protected onRowSelect(run: RunVM): void {
     this.select.emit(run);
+  }
+
+  protected onPageEvent(event: PageEvent): void {
+    this.pageChange.emit({ pageIndex: event.pageIndex, pageSize: event.pageSize });
   }
 
   /** Called by the page container to restore keyboard focus after drawer closes. */

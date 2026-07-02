@@ -150,6 +150,67 @@ export const SortingInteraction: Story = {
   },
 };
 
+// ─── Pagination ───────────────────────────────────────────────────────────────
+
+// Cycles the 7 base fixtures to 30 unique-id rows — just needs to be "many", not varied.
+const manyRuns = Array.from({ length: 30 }, (_, i) => {
+  const base = allRuns[i % allRuns.length];
+  return { ...base, id: `${base.id}-${i}`, name: `${base.name}-${i}` };
+});
+
+export const ManyRows: Story = {
+  name: 'ManyRows (30 rows, pageSize 10 → 3 pages)',
+  args: {
+    runs: manyRuns.slice(0, 10),
+    total: manyRuns.length,
+    pageIndex: 0,
+    pageSize: 10,
+    pageSizeOptions: [10, 25, 50],
+  },
+};
+
+export const SinglePage: Story = {
+  name: 'SinglePage (7 rows — "1–7 of 7", no page nav needed)',
+  args: {
+    runs: allRuns,
+    total: allRuns.length,
+  },
+};
+
+export const PageSizeChange: Story = {
+  name: 'Interaction: Changing page size emits pageChange',
+  args: {
+    runs: manyRuns.slice(0, 10),
+    total: manyRuns.length,
+    pageIndex: 0,
+    pageSize: 10,
+    pageChange: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('combobox'));
+    const overlay = within(document.body);
+    await userEvent.click(await overlay.findByRole('option', { name: '25' }));
+    await expect(args.pageChange).toHaveBeenCalledWith({ pageIndex: 0, pageSize: 25 });
+  },
+};
+
+export const PageNavigation: Story = {
+  name: 'Interaction: Next page emits pageChange',
+  args: {
+    runs: manyRuns.slice(0, 10),
+    total: manyRuns.length,
+    pageIndex: 0,
+    pageSize: 10,
+    pageChange: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: /next page/i }));
+    await expect(args.pageChange).toHaveBeenCalledWith({ pageIndex: 1, pageSize: 10 });
+  },
+};
+
 export const SortingNewColumns: Story = {
   name: 'Interaction: Sort Run/User/Retries headers',
   args: { runs: allRuns, sortChange: fn() },

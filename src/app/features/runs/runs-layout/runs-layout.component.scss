@@ -1,0 +1,52 @@
+:host {
+  display: block;
+}
+
+.runs-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  background: var(--c-bg);
+}
+
+// One white card: the summary (runs-summary already renders its own card —
+// this section is a transparent slot, never a second box around it).
+.runs-page__summary {
+  display: block;
+}
+
+// The other white card. Filter bar + table live inside as toolbar/body, not
+// as nested cards of their own.
+//
+// No `overflow: hidden` here: the page's single scroll container is
+// `app-runs-layout` itself (see runs-page-v2.component.scss); an overflow
+// value other than `visible` on any ancestor between it and the table's
+// sticky `<thead>` establishes its own (non-scrolling) box and silently
+// breaks `position: sticky` for everything inside.
+.runs-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgb(11 31 51 / 4%);
+}
+
+.runs-panel__toolbar {
+  border-bottom: 1px solid var(--c-border);
+}
+
+.runs-panel__body {
+  flex: 1;
+  min-height: 0;
+}
+
+@media (max-width: 720px) {
+  .runs-page {
+    gap: 16px;
+    padding: 12px;
+  }
+}

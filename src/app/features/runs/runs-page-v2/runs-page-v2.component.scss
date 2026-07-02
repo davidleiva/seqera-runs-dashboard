@@ -1,0 +1,91 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative; // drawer overlay stacks in here
+  overflow: hidden;
+}
+
+// The single scroll container for everything below the fixed sidebar/topbar:
+// page header, summary, filter bar and table all scroll together as one unit.
+// Without `flex: 1; min-height: 0` here, this block sizes to its own content
+// and silently overflows `.page`'s clipped, viewport-bound box above — the
+// table's tail becomes unreachable even though `.page` never scrolls itself.
+app-runs-layout {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+// ─── Error state (same treatment as the real runs-page) ───────────────────────
+
+.page__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 24px;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  background: var(--c-fail-bg);
+  border: 1px solid var(--c-fail-border);
+  color: var(--c-fail-text);
+
+  .material-icons {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.875rem;
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 0.8rem;
+    color: var(--c-text-muted);
+  }
+}
+
+// ─── Header slot content ───────────────────────────────────────────────────────
+
+.page-v2__header {
+  h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 650;
+    color: var(--c-text);
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 0.85rem;
+    color: var(--c-text-muted);
+  }
+}
+
+// ─── Drawer overlay ─────────────────────────────────────────────────────────────
+// Same reasoning as the Storybook preview (`runs-page-preview.component.scss`):
+// `app-run-drawer-material` always renders an empty `mat-drawer-content` filler,
+// even closed, so it needs `pointer-events: none` on the host with the real
+// interactive bits (`.mat-drawer`/`.mat-drawer-backdrop`, both inside
+// MatDrawerContainer's own template) opted back in via `::ng-deep`. `runs-layout`
+// scrolls its own content; the drawer must beat that scroll container's stacking.
+
+app-run-drawer-material {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+
+  ::ng-deep .mat-drawer,
+  ::ng-deep .mat-drawer-backdrop {
+    pointer-events: auto;
+  }
+}
