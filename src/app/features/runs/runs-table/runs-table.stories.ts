@@ -159,7 +159,7 @@ const manyRuns = Array.from({ length: 30 }, (_, i) => {
 });
 
 export const ManyRows: Story = {
-  name: 'ManyRows (30 rows, pageSize 10 → 3 pages)',
+  name: 'ManyRows (30 rows, pageSize 10 → 3 pages, pager shown)',
   args: {
     runs: manyRuns.slice(0, 10),
     total: manyRuns.length,
@@ -167,13 +167,26 @@ export const ManyRows: Story = {
     pageSize: 10,
     pageSizeOptions: [10, 25, 50],
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // total (30) > pageSize (10) → the full paginator renders, not the plain count.
+    await expect(canvas.getByRole('button', { name: /next page/i })).toBeVisible();
+    await expect(canvas.queryByText(/^30 runs$/)).toBeNull();
+  },
 };
 
 export const SinglePage: Story = {
-  name: 'SinglePage (7 rows — "1–7 of 7", no page nav needed)',
+  name: 'SinglePage (7 rows ≤ pageSize — pager hidden, count shown)',
   args: {
     runs: allRuns,
     total: allRuns.length,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // total (7) <= pageSize (default 25) → no page nav, dead chrome — just the count.
+    await expect(canvas.queryByRole('button', { name: /next page/i })).toBeNull();
+    await expect(canvas.queryByRole('combobox')).toBeNull();
+    await expect(canvas.getByText('7 runs')).toBeVisible();
   },
 };
 

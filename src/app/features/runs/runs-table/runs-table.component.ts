@@ -220,15 +220,23 @@ const COLUMNS: readonly ColumnMeta[] = [
       </div>
 
       <div class="table-pagination-container">
-        <mat-paginator
-          aria-label="Runs pagination"
-          [length]="effectiveTotal()"
-          [pageIndex]="pageIndex()"
-          [pageSize]="pageSize()"
-          [pageSizeOptions]="pageSizeOptions()"
-          [disabled]="loading()"
-          (page)="onPageEvent($event)"
-        />
+        @if (showPager()) {
+          <mat-paginator
+            aria-label="Runs pagination"
+            [length]="effectiveTotal()"
+            [pageIndex]="pageIndex()"
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="pageSizeOptions()"
+            [disabled]="loading()"
+            (page)="onPageEvent($event)"
+          />
+        } @else {
+          <!-- A single page of results is dead chrome — page nav with nowhere
+               to go. The total stays visible either way, just as plain text. -->
+          <div class="table-row-count" role="status">
+            {{ effectiveTotal() }} {{ effectiveTotal() === 1 ? 'run' : 'runs' }}
+          </div>
+        }
       </div>
     }
   `,
@@ -260,6 +268,9 @@ export class RunsTableComponent {
    * the pager reads "1–N of N" instead of a broken "0 of 0".
    */
   protected readonly effectiveTotal = computed(() => this.total() || this.runs().length);
+
+  /** Pager is dead chrome with nowhere to go once everything fits on one page. */
+  protected readonly showPager = computed(() => this.effectiveTotal() > this.pageSize());
 
   protected readonly skeletonRows = Array(6).fill(null);
 

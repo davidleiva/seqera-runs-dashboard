@@ -161,6 +161,18 @@ mat-paginator {
   background: var(--c-surface);
 }
 
+// Stands in for mat-paginator when there's only one page — same card-bottom
+// treatment, just the total instead of page nav with nowhere to go.
+.table-row-count {
+  padding: 14px 16px;
+  color: var(--c-text-muted);
+  border: 1px solid var(--c-border);
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--c-surface);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
 // ─── Empty state ───────────────────────────────────────────────────────────────
 
 .empty-state {
