@@ -78,11 +78,16 @@ cost · retries · where). Details that don't belong in a glance live in the dra
 **error-first**: the parsed cause, then metadata, task breakdown, and cost/resources —
 inverted pyramid, because that's why you opened it.
 
-**Guiding toward the solution — honestly.** Where the error matches a known pattern (e.g.
-"*Host EC2 instance terminated*" → spot interruption), we surface a plain-language cause
-and suggested next steps. We connect the failure to its **failed task** (the real unit of
-action) with affordances to open its work dir or copy its command. And an *"Explain with
-AI"* affordance signals where an AI copilot fits — shown as a labelled demo, not claimed as
+**Guiding toward the solution — honestly, without the two guides repeating each other.**
+Where the error matches a known pattern (e.g. "*Host EC2 instance terminated*" → spot
+interruption), the deterministic hint surfaces **only what to do** ("Retry the run", "add a
+retry error strategy") — no invented cause, and it's self-sufficient on its own. *"Explain
+with AI"* stays collapsed next to it as an optional, deeper look — it answers **why** in
+plain, reassuring language (what happened, that it isn't a bug in the pipeline or the data,
+the `-resume` nuance), and deliberately never repeats the hint's steps. When nothing matches
+a known pattern, there's no hint to lean on — the AI explanation (still a labelled demo, see
+honesty note) is what fills that gap instead. We also connect the failure to its **failed
+task** (the real unit of action) with affordances to copy its work-dir path or command. And an *"Explain with AI"* affordance signals where an AI copilot fits — shown as a labelled demo, not claimed as
 live (see honesty note).
 
 **The small-big decisions.** A few choices that carry more weight than they look:
@@ -166,7 +171,11 @@ Deliberately deferred to keep a focused, well-built slice:
 - The **AI "Explain error"** is a **labelled demo**, not live inference — real AI (log
   summarisation, cause + fix suggestion) is documented as future work; we don't fabricate
   diagnoses.
-- **"Retry run"** is a placeholder (no backend).
+- **"Retry run"** is a placeholder (no backend). **Copy work dir** / **View full log** copy
+  or reveal locally; in the real product they'd deep-link to Seqera's Data Explorer.
+- **"Copy work dir"** copies the S3 path to the clipboard — it doesn't open anything. In the
+  real product this would deep-link straight into Seqera's **Data Explorer** at that path;
+  we don't fake a browse experience we don't have.
 - One accessibility flag (`aria-hidden-focus` on Angular CDK's focus-trap anchors) is a
   known framework false-positive, excluded from the axe scan with justification rather than
   hidden.

@@ -276,6 +276,32 @@
   cursor: not-allowed;
 }
 
+// Secondary action row (copy/view utilities) — same buttons, visually quieter
+// so the two primary CTAs (Retry, Explain) read as the actions that matter.
+.result-card__actions--secondary {
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.button--ghost {
+  min-height: 28px;
+  padding: 4px 8px;
+  color: #5d6d7e;
+  background: transparent;
+  border-color: transparent;
+  font-size: 0.74rem;
+
+  .material-icons {
+    font-size: 14px;
+  }
+
+  &:hover {
+    color: var(--c-text);
+    background: #f1f4f7;
+    border-color: #e4e9ef;
+  }
+}
+
 // Accessible violet — #8B5CF6 (the raw accent token) is a decorative/bars-only
 // colour and fails AA as text; these two are a darker/lighter pair from the
 // same hue that read as ~5.6:1 and ~7:1 respectively against white.

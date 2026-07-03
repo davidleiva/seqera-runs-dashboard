@@ -128,10 +128,7 @@ type CopyTarget = 'error' | 'workDir' | 'command' | 'taskWorkDir' | 'taskScript'
 
                       @if (selectedRun.knownIssue; as issue) {
                         <div class="known-issue">
-                          <p class="known-issue__lead">
-                            <strong>Suggested next steps:</strong> based on the error, this looks
-                            like {{ issue.cause }}
-                          </p>
+                          <p class="known-issue__lead"><strong>Suggested next steps</strong></p>
                           <ul class="known-issue__steps">
                             @for (step of issue.steps; track step) {
                               <li>{{ step }}</li>
@@ -141,50 +138,6 @@ type CopyTarget = 'error' | 'workDir' | 'command' | 'taskWorkDir' | 'taskScript'
                       }
 
                       <div class="result-card__actions">
-                        @if (copyableError()) {
-                          <button
-                            class="button button--secondary"
-                            type="button"
-                            (click)="copyError()"
-                          >
-                            <span class="material-icons" aria-hidden="true">
-                              {{ copiedTarget() === 'error' ? 'check' : 'content_copy' }}
-                            </span>
-                            {{ copiedTarget() === 'error' ? 'Copied!' : 'Copy' }}
-                          </button>
-                        }
-                        <button class="button" type="button" (click)="copyCommand()">
-                          <span class="material-icons" aria-hidden="true">
-                            {{ copiedTarget() === 'command' ? 'check' : 'content_copy' }}
-                          </span>
-                          {{ copiedTarget() === 'command' ? 'Copied!' : 'Copy command' }}
-                        </button>
-                        @if (selectedRun.workDir !== '—') {
-                          <button class="button" type="button" (click)="copyWorkDir()">
-                            <span class="material-icons" aria-hidden="true">
-                              {{ copiedTarget() === 'workDir' ? 'check' : 'folder_open' }}
-                            </span>
-                            {{ copiedTarget() === 'workDir' ? 'Copied!' : 'Open work dir' }}
-                          </button>
-                        }
-                        @if (copyableError()) {
-                          <button
-                            class="button"
-                            type="button"
-                            aria-controls="raw-log-panel"
-                            [attr.aria-expanded]="showFullLog()"
-                            (click)="toggleFullLog()"
-                          >
-                            <span class="material-icons" aria-hidden="true">subject</span>
-                            {{ showFullLog() ? 'Hide full log' : 'View full log' }}
-                          </button>
-                        }
-                        @if (selectedRun.failedTask) {
-                          <button class="button" type="button" (click)="inspectFailedTask()">
-                            <span class="material-icons" aria-hidden="true">search</span>
-                            Inspect failed task
-                          </button>
-                        }
                         <button
                           class="button button--disabled"
                           type="button"
@@ -207,8 +160,55 @@ type CopyTarget = 'error' | 'workDir' | 'command' | 'taskWorkDir' | 'taskScript'
                           "
                           (click)="toggleAiDemo()"
                         >
-                          ✨ {{ aiDemoRevealed() ? 'Hide AI explanation' : 'Explain error with AI' }}
+                          ✨ {{ aiDemoRevealed() ? 'Hide AI explanation' : 'Explain with AI' }}
                         </button>
+                      </div>
+
+                      <div
+                        class="result-card__actions result-card__actions--secondary"
+                        role="group"
+                        aria-label="More actions"
+                      >
+                        @if (copyableError()) {
+                          <button class="button button--ghost" type="button" (click)="copyError()">
+                            <span class="material-icons" aria-hidden="true">
+                              {{ copiedTarget() === 'error' ? 'check' : 'content_copy' }}
+                            </span>
+                            {{ copiedTarget() === 'error' ? 'Copied!' : 'Copy' }}
+                          </button>
+                        }
+                        <button class="button button--ghost" type="button" (click)="copyCommand()">
+                          <span class="material-icons" aria-hidden="true">
+                            {{ copiedTarget() === 'command' ? 'check' : 'content_copy' }}
+                          </span>
+                          {{ copiedTarget() === 'command' ? 'Copied!' : 'Copy command' }}
+                        </button>
+                        @if (selectedRun.workDir !== '—') {
+                          <button class="button button--ghost" type="button" (click)="copyWorkDir()">
+                            <span class="material-icons" aria-hidden="true">
+                              {{ copiedTarget() === 'workDir' ? 'check' : 'content_copy' }}
+                            </span>
+                            {{ copiedTarget() === 'workDir' ? 'Copied!' : 'Copy work dir' }}
+                          </button>
+                        }
+                        @if (copyableError()) {
+                          <button
+                            class="button button--ghost"
+                            type="button"
+                            aria-controls="raw-log-panel"
+                            [attr.aria-expanded]="showFullLog()"
+                            (click)="toggleFullLog()"
+                          >
+                            <span class="material-icons" aria-hidden="true">subject</span>
+                            {{ showFullLog() ? 'Hide full log' : 'View full log' }}
+                          </button>
+                        }
+                        @if (selectedRun.failedTask) {
+                          <button class="button button--ghost" type="button" (click)="inspectFailedTask()">
+                            <span class="material-icons" aria-hidden="true">search</span>
+                            Inspect failed task
+                          </button>
+                        }
                       </div>
 
                       @if (showFullLog()) {
@@ -219,7 +219,6 @@ type CopyTarget = 'error' | 'workDir' | 'command' | 'taskWorkDir' | 'taskScript'
                         <div id="ai-demo-panel" class="ai-demo" role="note" aria-label="AI-generated explanation (demo only, not live inference)">
                           <span class="ai-demo__badge">AI · demo</span>
                           <p>{{ aiDemoResponse.explanation }}</p>
-                          <p><strong>Suggested fix:</strong> {{ aiDemoResponse.suggestedFix }}</p>
                         </div>
                       }
                     </div>
@@ -375,16 +374,16 @@ type CopyTarget = 'error' | 'workDir' | 'command' | 'taskWorkDir' | 'taskScript'
                     <div class="result-card__actions">
                       <button class="button" type="button" (click)="copyTaskWorkDir()">
                         <span class="material-icons" aria-hidden="true">
-                          {{ copiedTarget() === 'taskWorkDir' ? 'check' : 'folder_open' }}
+                          {{ copiedTarget() === 'taskWorkDir' ? 'check' : 'content_copy' }}
                         </span>
-                        {{ copiedTarget() === 'taskWorkDir' ? 'Copied!' : 'Open work dir' }}
+                        {{ copiedTarget() === 'taskWorkDir' ? 'Copied!' : 'Copy task work dir' }}
                       </button>
                       @if (failedTask.script) {
                         <button class="button" type="button" (click)="copyTaskScript()">
                           <span class="material-icons" aria-hidden="true">
                             {{ copiedTarget() === 'taskScript' ? 'check' : 'content_copy' }}
                           </span>
-                          {{ copiedTarget() === 'taskScript' ? 'Copied!' : 'Copy command' }}
+                          {{ copiedTarget() === 'taskScript' ? 'Copied!' : 'Copy task command' }}
                         </button>
                       }
                       <button

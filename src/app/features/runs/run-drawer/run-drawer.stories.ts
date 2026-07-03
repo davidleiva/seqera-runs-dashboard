@@ -79,8 +79,22 @@ export const FailedWithKnownIssue: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
+    // Hint = what to do only. No invented cause sentence in this block.
     await expect(canvas.getByText(/Suggested next steps/i)).toBeVisible();
-    await expect(canvas.getByRole('button', { name: /explain error with ai/i })).toBeEnabled();
+    await expect(canvas.getByText('Retry the run')).toBeVisible();
+    await expect(canvas.queryByText(/this looks like/i)).toBeNull();
+
+    // "Copy work dir" replaces the old "Open work dir" — it copies, it doesn't navigate.
+    await expect(canvas.getByRole('button', { name: 'Copy work dir' })).toBeVisible();
+    await expect(canvas.queryByRole('button', { name: /open work dir/i })).toBeNull();
+
+    // AI is collapsed by default and labelled plainly, without repeating "error".
+    // Scoped to the error card: the failed-task callout has its own "Explain with
+    // AI" entry point into the same panel, so the unscoped query would be ambiguous.
+    const errorCard = canvasElement.querySelector<HTMLElement>('.result-card--failed');
+    const explainButton = within(errorCard!).getByRole('button', { name: /explain with ai/i });
+    await expect(explainButton).toBeEnabled();
+    await expect(explainButton).toHaveAttribute('aria-expanded', 'false');
 
     // Clicking the red segment scrolls to and focuses the failed-task callout.
     const segment = canvas.getByRole('button', { name: /1 failed task: view details/i });
@@ -89,9 +103,14 @@ export const FailedWithKnownIssue: Story = {
     await waitFor(() => expect(document.activeElement).toBe(callout));
     await expect(canvas.getByRole('heading', { name: 'Failed task' })).toBeVisible();
 
-    // The AI demo is clearly labelled, never presented as live inference.
-    await userEvent.click(canvas.getByRole('button', { name: /explain error with ai/i }));
+    // The AI demo is clearly labelled, never presented as live inference, and
+    // explains the "why" without repeating the hint's "what to do" steps.
+    await userEvent.click(explainButton);
     await expect(canvas.getByText('AI · demo')).toBeVisible();
+    const aiPanel = canvasElement.querySelector<HTMLElement>('#ai-demo-panel');
+    await expect(aiPanel).not.toBeNull();
+    await expect(aiPanel!.textContent).not.toMatch(/retry the run/i);
+    await expect(aiPanel!.textContent).not.toMatch(/retry error strategy/i);
   },
 };
 
@@ -103,7 +122,10 @@ export const FailedNoMatch: Story = {
 
     // Honest degrade: no invented cause, no AI demo for an ineligible run.
     await expect(canvas.queryByText(/Suggested next steps/i)).toBeNull();
-    await expect(canvas.getByRole('button', { name: /explain error with ai/i })).toBeDisabled();
+    const errorCard = canvasElement.querySelector<HTMLElement>('.result-card--failed');
+    await expect(
+      within(errorCard!).getByRole('button', { name: /explain with ai/i }),
+    ).toBeDisabled();
 
     // The failed-task callout still renders — it's read from tasks[], not the hint lookup.
     await expect(canvas.getByRole('heading', { name: 'Failed task' })).toBeVisible();
