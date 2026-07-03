@@ -44,3 +44,7 @@ body {
 *::after {
   box-sizing: border-box;
 }
+
+p {
+  word-break: break-word;
+}
